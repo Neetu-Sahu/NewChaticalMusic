@@ -19,6 +19,16 @@
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent">
 
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/host_avatar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="12dp"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/RoundedCorner16dp"
+            android:background="#2C2C2E"
+            android:src="@drawable/ic_music_placeholder" />
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -414,6 +424,73 @@
         android:background="#22000000"
         android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Reply Draft Bar -->
+        <LinearLayout
+            android:id="@+id/reply_draft_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/glass_card_bg"
+            android:backgroundTint="#33FFFFFF"
+            android:padding="10dp"
+            android:layout_marginBottom="4dp"
+            android:gravity="center_vertical"
+            android:visibility="gone">
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:background="#1DB954" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:id="@+id/reply_draft_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Replying to User"
+                    android:textColor="#1DB954"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/reply_draft_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="The message content goes here..."
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="12sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/cancel_reply_btn"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:tint="#8E8E93" />
+        </LinearLayout>
+
+        <!-- Typing Indicator -->
+        <TextView
+            android:id="@+id/typing_indicator_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="4dp"
+            android:text="User is typing..."
+            android:textColor="#1DB954"
+            android:textSize="11sp"
+            android:textStyle="italic"
+            android:visibility="gone" />
 
         <!-- Emoji Quick Bar -->
         <LinearLayout
