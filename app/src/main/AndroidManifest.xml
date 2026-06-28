@@ -42,6 +42,18 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".CreateRoomActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".JoinRoomActivity"
+            android:exported="false" />
+
         <service
             android:name=".service.MusicPlaybackService"
             android:exported="true"
