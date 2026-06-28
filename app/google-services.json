@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "621405421415",
+    "firebase_url": "https://chatical-music-default-rtdb.firebaseio.com",
+    "project_id": "chatical-music",
+    "storage_bucket": "chatical-music.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621405421415:android:176316eaa93fff440c39c2",
+        "android_client_info": {
+          "package_name": "com.example.chaticalmusic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "621405421415-l6epacnrtoo4bmrj6eih7di73v9ql49e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chaticalmusic",
+            "certificate_hash": "0c8a11ff651c829acbb6f4b0cd53e1cbd01ba803"
+          }
+        },
+        {
+          "client_id": "621405421415-9u0rspocekildh7dr10tltl2f525h33t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw6X0wZBaEr-24fIMP3BdGsO2bMpUU6Fo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "621405421415-9u0rspocekildh7dr10tltl2f525h33t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

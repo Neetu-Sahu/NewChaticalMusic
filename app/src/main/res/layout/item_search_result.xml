@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="10dp"
+    android:paddingVertical="8dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <!-- Album art with rounded corners -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/result_art"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:scaleType="centerCrop"
+        android:background="#2A2A2A"
+        app:shapeAppearanceOverlay="@style/RoundedCorner6dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:srcCompat="@drawable/ic_music_placeholder" />
+
+    <!-- Track title -->
+    <TextView
+        android:id="@+id/result_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Track Title"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintStart_toEndOf="@id/result_art"
+        app:layout_constraintEnd_toStartOf="@id/result_more_btn"
+        app:layout_constraintTop_toTopOf="@id/result_art"
+        app:layout_constraintBottom_toTopOf="@id/result_artist"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <!-- Artist name -->
+    <TextView
+        android:id="@+id/result_artist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Artist Name"
+        android:textColor="#888888"
+        android:textSize="12sp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintStart_toEndOf="@id/result_art"
+        app:layout_constraintEnd_toStartOf="@id/result_more_btn"
+        app:layout_constraintTop_toBottomOf="@id/result_title"
+        app:layout_constraintBottom_toBottomOf="@id/result_art" />
+
+    <!-- 3-dot overflow menu button -->
+    <ImageButton
+        android:id="@+id/result_more_btn"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_more_vert"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="More options"
+        app:tint="#888888"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

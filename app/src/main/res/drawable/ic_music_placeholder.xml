@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background shape (rounded dark square) -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#2A2A2A" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+    <!-- Music note icon centered -->
+    <item
+        android:drawable="@drawable/ic_music_note"
+        android:gravity="center" />
+</layer-list>

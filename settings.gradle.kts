@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "NewChaticalMusic"
+rootProject.name = "CHATICAL MUSIC"
 include(":app")

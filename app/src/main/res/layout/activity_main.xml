@@ -5,12 +5,229 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/dark_gradient_bg"
     tools:context=".MainActivity">
 
-    <TextView
+    <!-- Top Header -->
+    <LinearLayout
+        android:id="@+id/header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/welcome_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome to"
+            android:textColor="#8E8E93"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:letterSpacing="0.1"/>
+
+        <TextView
+            android:id="@+id/app_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MusicalChat"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <!-- Room Entry Section (Card style) -->
+    <LinearLayout
+        android:id="@+id/room_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="24dp"
+        android:padding="24dp"
+        android:background="@drawable/glass_card_bg"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/header_layout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Join or Create Room"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Custom Styled EditText -->
+        <EditText
+            android:id="@+id/room_name_input"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/edit_text_bg"
+            android:hint="Enter room name..."
+            android:textColorHint="#55FFFFFF"
+            android:textColor="#FFFFFF"
+            android:paddingHorizontal="16dp"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Private Room Switch Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Private Room"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Only joinable via search"
+                    android:textColor="#8E8E93"
+                    android:textSize="12sp"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/private_room_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:thumbTint="#1DB954"
+                app:trackTint="#55FFFFFF" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/create_room_btn"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:backgroundTint="#1DB954"
+            android:text="Create Room"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:layout_marginBottom="12dp"
+            app:cornerRadius="26dp"/>
+
+        <Button
+            android:id="@+id/join_room_btn"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:backgroundTint="#2C2C2E"
+            android:text="Join Room"
+            android:textColor="#1DB954"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:cornerRadius="26dp"
+            app:strokeColor="#1DB954"
+            app:strokeWidth="1dp"/>
+    </LinearLayout>
+
+    <!-- Public Rooms Section -->
+    <LinearLayout
+        android:id="@+id/public_rooms_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:padding="16dp"
+        android:background="@drawable/glass_card_bg"
+        app:layout_constraintTop_toBottomOf="@id/room_card"
+        app:layout_constraintBottom_toTopOf="@id/search_btn_container">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Active Public Rooms"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/public_rooms_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"/>
+
+            <TextView
+                android:id="@+id/no_public_rooms_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="No active public rooms"
+                android:textColor="#8E8E93"
+                android:textSize="14sp"
+                android:visibility="gone"/>
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- Search Section (Separate button container at bottom) -->
+    <LinearLayout
+        android:id="@+id/search_btn_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Want to listen solo first?"
+            android:textColor="#8E8E93"
+            android:textSize="14sp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/search_music_btn"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:backgroundTint="#2C2C2E"
+            android:text="Search &amp; Play Music"
+            android:textColor="#1DB954"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:cornerRadius="26dp"
+            app:strokeColor="#1DB954"
+            app:strokeWidth="1dp"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/main_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:visibility="gone"
+        android:indeterminateTint="#1DB954"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

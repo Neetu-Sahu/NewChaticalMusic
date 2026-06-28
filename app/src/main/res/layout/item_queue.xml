@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/up_next_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Up next"
+        android:textColor="#1DB954"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:letterSpacing="0.05"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="4dp"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:cardCornerRadius="4dp"
+            app:cardBackgroundColor="#000000">
+
+        <ImageView
+            android:id="@+id/queue_track_art"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_music_placeholder" />
+        </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="12dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/queue_track_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Track Title"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:singleLine="true"/>
+
+        <TextView
+            android:id="@+id/queue_track_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Track Artist"
+            android:textColor="#B3FFFFFF"
+            android:textSize="12sp"
+            android:ellipsize="end"
+            android:singleLine="true"/>
+
+        <TextView
+            android:id="@+id/queue_added_by"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="added by You"
+            android:textColor="#8E8E93"
+            android:textSize="10sp"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1" />
+    </LinearLayout>
+
+    <!-- Upvote Section -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginEnd="12dp">
+
+        <TextView
+            android:id="@+id/queue_upvote_btn"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:text="▲"
+            android:textColor="#8E8E93"
+            android:textSize="18sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
+
+        <TextView
+            android:id="@+id/queue_upvote_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#8E8E93"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginStart="2dp" />
+    </LinearLayout>
+
+    <!-- Downvote Section -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/queue_downvote_btn"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:text="▼"
+            android:textColor="#8E8E93"
+            android:textSize="18sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
+
+        <TextView
+            android:id="@+id/queue_downvote_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#8E8E93"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginStart="2dp" />
+    </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

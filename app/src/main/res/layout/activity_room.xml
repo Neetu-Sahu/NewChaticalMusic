@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/dark_gradient_bg"
+    tools:context=".RoomActivity">
+
+    <!-- 1. Header Bar (Glass design) -->
+    <LinearLayout
+        android:id="@+id/header_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="@drawable/glass_card_bg"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/room_name_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Room Name"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/host_name_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DJ: Host Name"
+                android:textColor="#B3FFFFFF"
+                android:textSize="13sp" />
+
+            <!-- Room Code Badge -->
+            <LinearLayout
+                android:id="@+id/room_code_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/glass_card_bg"
+                android:backgroundTint="#33FFFFFF"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/room_code_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Code: Loading..."
+                    android:textColor="#1DB954"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" 📋"
+                    android:textColor="#1DB954"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/sync_status_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Synced"
+            android:textColor="#1DB954"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:background="@drawable/edit_text_bg"
+            android:layout_marginEnd="8dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/member_count_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 Member"
+            android:textColor="#1DB954"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:background="@drawable/edit_text_bg"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp" />
+    </LinearLayout>
+
+    <!-- Host banner warning (Optional edge-case UI) -->
+    <TextView
+        android:id="@+id/host_warning_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#E02424"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="Waiting for a new host..."
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/header_bar" />
+
+    <!-- Queue Empty Banner -->
+    <TextView
+        android:id="@+id/queue_empty_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#1DB954"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="Queue empty — add a song to continue."
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/host_warning_banner" />
+
+    <!-- Scrollable content area for player, queue, and chat -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollable_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/queue_empty_banner"
+        app:layout_constraintBottom_toTopOf="@id/bottom_input_container">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- 2. Player Area -->
+            <LinearLayout
+                android:id="@+id/player_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/glass_card_bg"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardBackgroundColor="#000000">
+
+                        <ImageView
+                            android:id="@+id/track_art"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_music_placeholder" />
+                    </androidx.cardview.widget.CardView>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:id="@+id/track_title"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="No Song Playing"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:ellipsize="end"
+                                android:singleLine="true"/>
+
+                            <LinearLayout
+                                android:id="@+id/equalizer_container"
+                                android:layout_width="20dp"
+                                android:layout_height="16dp"
+                                android:layout_marginStart="8dp"
+                                android:orientation="horizontal"
+                                android:gravity="bottom"
+                                android:visibility="gone">
+
+                                <View
+                                    android:id="@+id/eq_bar1"
+                                    android:layout_width="3dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginEnd="2dp"
+                                    android:background="#1DB954" />
+
+                                <View
+                                    android:id="@+id/eq_bar2"
+                                    android:layout_width="3dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginEnd="2dp"
+                                    android:background="#1DB954" />
+
+                                <View
+                                    android:id="@+id/eq_bar3"
+                                    android:layout_width="3dp"
+                                    android:layout_height="match_parent"
+                                    android:background="#1DB954" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/track_artist"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Choose a song to start"
+                            android:textColor="#B3FFFFFF"
+                            android:textSize="14sp"
+                            android:ellipsize="end"
+                            android:singleLine="true"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/track_seekbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:max="100"
+                    android:progress="0"
+                    android:theme="@style/Widget.AppCompat.SeekBar" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginTop="2dp">
+
+                    <TextView
+                        android:id="@+id/track_time_elapsed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="00:00"
+                        android:textColor="#B3FFFFFF"
+                        android:textSize="12sp" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/track_time_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="00:00"
+                        android:textColor="#B3FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Playback controls (Host only) -->
+                <LinearLayout
+                    android:id="@+id/host_controls_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="12dp">
+
+                    <ImageButton
+                        android:id="@+id/play_pause_btn"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@android:drawable/ic_media_play"
+                        android:contentDescription="Play/Pause"
+                        android:tint="#1DB954"/>
+
+                    <ImageButton
+                        android:id="@+id/skip_btn"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="24dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@android:drawable/ic_media_next"
+                        android:contentDescription="Skip"
+                        android:tint="#FFFFFF"/>
+                </LinearLayout>
+
+                <!-- Guest search helper & AUX request buttons -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp">
+
+                    <Button
+                        android:id="@+id/add_to_queue_helper_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:backgroundTint="#33FFFFFF"
+                        android:text="Search &amp; Play Song"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        app:cornerRadius="18dp"
+                        android:layout_marginEnd="8dp"/>
+
+                    <Button
+                        android:id="@+id/request_aux_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:backgroundTint="#1DB954"
+                        android:text="Request AUX"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        app:cornerRadius="18dp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 3. Queue Section -->
+            <LinearLayout
+                android:id="@+id/queue_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/glass_card_bg"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Queue"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <!-- Set max height using layout_constrainedHeight inside ConstraintLayout if needed,
+                     here we use max visible height programmatically or wrap content with 3 items -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/queue_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
+            </LinearLayout>
+
+            <!-- 4. Chat Section -->
+            <LinearLayout
+                android:id="@+id/chat_section"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:background="@drawable/glass_card_bg"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Live Chat"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/chat_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scrollbars="vertical" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- 5. Bottom Input bar container -->
+    <LinearLayout
+        android:id="@+id/bottom_input_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#22000000"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Emoji Quick Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="6dp">
+
+            <TextView
+                android:id="@+id/emoji_fire_btn"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/edit_text_bg"
+                android:text="🔥"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/emoji_heart_btn"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="16dp"
+                android:background="@drawable/edit_text_bg"
+                android:text="❤️"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/emoji_wow_btn"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="16dp"
+                android:background="@drawable/edit_text_bg"
+                android:text="😮"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"/>
+        </LinearLayout>
+
+        <!-- Message Input Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/chat_input"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="@drawable/edit_text_bg"
+                android:hint="Type a message..."
+                android:textColorHint="#55FFFFFF"
+                android:textColor="#FFFFFF"
+                android:paddingHorizontal="16dp"
+                android:inputType="textShortMessage"
+                android:textSize="14sp"
+                android:maxLines="3" />
+
+            <ImageButton
+                android:id="@+id/chat_send_btn"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/edit_text_bg"
+                android:backgroundTint="#1DB954"
+                android:src="@android:drawable/ic_menu_send"
+                android:tint="#FFFFFF"
+                android:contentDescription="Send" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/emoji_overlay_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

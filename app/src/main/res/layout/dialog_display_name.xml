@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#1E1E1E"
+    android:padding="24dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:background="#444444"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="What should we call you?"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose a display name for chat rooms and sharing."
+        android:textColor="#B3B3B3"
+        android:textSize="14sp"
+        android:layout_marginBottom="20dp" />
+
+    <EditText
+        android:id="@+id/display_name_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter display name"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#666666"
+        android:textSize="16sp"
+        android:background="@drawable/edit_text_bg"
+        android:padding="16dp"
+        android:inputType="textPersonName"
+        android:maxLines="1"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btn_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Confirm"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:backgroundTint="#1DB954"
+        android:padding="16dp" />
+
+</LinearLayout>
