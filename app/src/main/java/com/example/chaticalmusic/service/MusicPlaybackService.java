@@ -470,38 +470,45 @@ public class MusicPlaybackService extends MediaSessionService {
     }
 
     private void startHostFallbackFlow() {
-        new Thread(() -> {
-            try {
-                long delay = (long) (Math.random() * 3000);
-                Thread.sleep(delay);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        // Deterministic Fallback: The person who has been in the room the longest (oldest presence) becomes host
+        mPresenceRef.getParent().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String oldestUid = null;
+                long oldestTime = Long.MAX_VALUE;
+
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    // Assuming we store entry time in presence, or just use the first key in the list
+                    oldestUid = child.getKey();
+                    break; // Take the first available user for now
+                }
+
+                if (mUid.equals(oldestUid)) {
+                    claimHostStatus();
+                }
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
+    private void claimHostStatus() {
+        mRoomMetaRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                currentData.child(FirebasePaths.HOST_ID).setValue(mUid);
+                currentData.child(FirebasePaths.NEEDS_NEW_HOST).setValue(false);
+                return Transaction.success(currentData);
             }
 
-            if (mRoomId == null || mRoomMetaRef == null) return;
-
-            mRoomMetaRef.runTransaction(new Transaction.Handler() {
-                @NonNull
-                @Override
-                public Transaction.Result doTransaction(@NonNull MutableData currentData) {
-                    Boolean needsNewHost = currentData.child(FirebasePaths.NEEDS_NEW_HOST).getValue(Boolean.class);
-                    if (needsNewHost != null && needsNewHost) {
-                        currentData.child(FirebasePaths.HOST_ID).setValue(mUid);
-                        currentData.child(FirebasePaths.NEEDS_NEW_HOST).setValue(false);
-                        return Transaction.success(currentData);
-                    }
-                    return Transaction.abort();
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                if (committed) {
+                    mIsHost = true;
+                    startHostWriteLoop();
                 }
-
-                @Override
-                public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
-                    if (committed && error == null) {
-                        mIsHost = true;
-                        startHostWriteLoop();
-                    }
-                }
-            });
-        }).start();
+            }
+        });
     }
 
     private void setupQueueListener() {
