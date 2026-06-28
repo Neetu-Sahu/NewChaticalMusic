@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Glow/Shadow Effect -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#44FF829B" />
+        </shape>
+    </item>
+    <!-- Main Button -->
+    <item android:top="2dp" android:left="2dp" android:right="2dp" android:bottom="2dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/melodify_pink" />
+        </shape>
+    </item>
+</layer-list>

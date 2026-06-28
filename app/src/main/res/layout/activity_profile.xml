@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/heartbeat_animated_bg">
+
+    <!-- Background Animation Container -->
+    <FrameLayout
+        android:id="@+id/love_animation_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.3"
+        android:clickable="false"
+        android:focusable="false" />
+
+    <!-- Custom Header -->
+    <LinearLayout
+        android:id="@+id/profile_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="32dp"
+            android:src="@drawable/logo"
+            android:scaleType="fitStart"
+            android:contentDescription="Melodify Logo" />
+
+        <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/header_avatar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:padding="1dp"
+            app:strokeColor="@color/melodify_pink"
+            app:strokeWidth="1dp"
+            app:shapeAppearanceOverlay="@style/RoundedCorner16dp"
+            android:src="@drawable/ic_music_placeholder" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/profile_header"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav_container">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:gravity="center_horizontal">
+
+            <!-- Main Profile Info -->
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/profile_main_avatar"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:padding="4dp"
+                    app:strokeColor="@color/melodify_pink"
+                    app:strokeWidth="2dp"
+                    app:shapeAppearanceOverlay="@style/RoundedCorner16dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_music_placeholder" />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="bottom|end"
+                    android:background="@color/melodify_pink"
+                    android:padding="6dp"
+                    android:src="@android:drawable/ic_menu_edit"
+                    app:shapeAppearanceOverlay="@style/RoundedCorner16dp"
+                    app:tint="@color/melodify_background" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/profile_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Alex Rivera"
+                android:textColor="@color/melodify_pink"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp" />
+
+            <TextView
+                android:id="@+id/profile_bio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Searching for the rhythm of our shared hearts."
+                android:textColor="@color/melodify_text_secondary"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:paddingHorizontal="24dp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <!-- Soulmate Match Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/glass_card_bg"
+                android:backgroundTint="@color/melodify_card"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:layout_marginTop="30dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SOULMATE MATCH"
+                        android:textColor="@color/melodify_text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:text="♡ _ ▤"
+                        android:textColor="@color/melodify_text_secondary" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="98%"
+                        android:textColor="@color/white"
+                        android:textSize="40sp"
+                        android:textStyle="bold" />
+
+                    <ProgressBar
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="8dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:progress="98"
+                        android:progressTint="@color/melodify_pink"
+                        android:progressBackgroundTint="#33FFFFFF" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Highest compatibility found with Maya J. in Jazz &amp; Chillhop."
+                    android:textColor="@color/melodify_text_secondary"
+                    android:textSize="13sp"
+                    android:layout_marginTop="12dp" />
+            </LinearLayout>
+
+            <!-- Secondary Stats Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/glass_card_bg"
+                    android:backgroundTint="@color/melodify_card"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📊 RHYTHM SCORE"
+                        android:textColor="@color/melodify_text_secondary"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/rhythm_score_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1,240"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/glass_card_bg"
+                    android:backgroundTint="@color/melodify_card"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:layout_marginStart="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🕒 SHARED HOURS"
+                        android:textColor="@color/melodify_text_secondary"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/shared_hours_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="84h"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Recent Rooms Section -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Recent Rooms"
+                    android:textColor="@color/melodify_pink"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text="VIEW ALL"
+                    android:textColor="@color/melodify_text_secondary"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <!-- Recent Room Item 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/glass_card_bg"
+                android:backgroundTint="@color/melodify_card"
+                android:gravity="center_vertical"
+                android:padding="12dp"
+                android:layout_marginTop="12dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_music_placeholder"
+                    app:shapeAppearanceOverlay="@style/RoundedCorner6dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="12dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rainy Night Jazz"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="With 12 others • 24m ago"
+                        android:textColor="@color/melodify_text_secondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/ic_media_play"
+                    app:tint="@color/melodify_text_secondary" />
+            </LinearLayout>
+
+            <!-- Recent Room Item 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/glass_card_bg"
+                android:backgroundTint="@color/melodify_card"
+                android:gravity="center_vertical"
+                android:padding="12dp"
+                android:layout_marginTop="12dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_music_placeholder"
+                    app:shapeAppearanceOverlay="@style/RoundedCorner6dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="12dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Heart Beats Only"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="With Maya J. • 2h ago"
+                        android:textColor="@color/melodify_text_secondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/ic_media_play"
+                    app:tint="@color/melodify_text_secondary" />
+            </LinearLayout>
+
+            <!-- Preferences Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="Preferences"
+                android:textColor="@color/melodify_pink"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/glass_card_bg"
+                android:backgroundTint="@color/melodify_card"
+                android:orientation="vertical"
+                android:layout_marginTop="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:padding="16dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🛡️"
+                        android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:text="Profile Visibility"
+                        android:textColor="@color/white"
+                        android:textSize="15sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Romantic Mode >"
+                        android:textColor="@color/melodify_text_secondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#1AFFFFFF" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:padding="16dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔔"
+                        android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:text="Vibration &amp; Haptics"
+                        android:textColor="@color/white"
+                        android:textSize="15sp" />
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        app:thumbTint="@color/melodify_pink"
+                        app:trackTint="#33FFFFFF" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#1AFFFFFF" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:padding="16dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="♡"
+                        android:textColor="@color/melodify_pink"
+                        android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:text="Music Language"
+                        android:textColor="@color/white"
+                        android:textSize="15sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=">"
+                        android:textColor="@color/melodify_text_secondary" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Logout Button -->
+            <Button
+                android:id="@+id/logout_btn"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="30dp"
+                android:backgroundTint="@color/melodify_card"
+                android:text="Log Out of Melodify"
+                android:textAllCaps="false"
+                android:textColor="@color/melodify_pink"
+                android:textSize="16sp"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/melodify_pink"
+                app:strokeWidth="1dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Nav & Mini Player container -->
+    <LinearLayout
+        android:id="@+id/bottom_nav_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/melodify_background"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Mini Player -->
+        <LinearLayout
+            android:id="@+id/mini_player"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="♡"
+                android:textColor="@color/melodify_pink"
+                android:layout_marginEnd="12dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/mini_player_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="&quot;Serenade in C&quot; — Listening with Maya"
+                    android:textColor="@color/melodify_pink"
+                    android:textSize="12sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/mini_player_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="01:42 / 04:15"
+                android:textColor="@color/melodify_text_secondary"
+                android:textSize="10sp"
+                android:layout_marginStart="12dp"
+                android:gravity="end" />
+        </LinearLayout>
+
+        <!-- Bottom Tab Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal"
+            android:background="@color/melodify_background"
+            android:gravity="center_vertical"
+            android:elevation="10dp">
+
+            <LinearLayout
+                android:id="@+id/nav_lobby"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_today" app:tint="@color/melodify_text_secondary" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lobby" android:textColor="@color/melodify_text_secondary" android:textSize="10sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/nav_search"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_search" app:tint="@color/melodify_text_secondary" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Search" android:textColor="@color/melodify_text_secondary" android:textSize="10sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/nav_rooms"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_view" app:tint="@color/melodify_text_secondary" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Rooms" android:textColor="@color/melodify_text_secondary" android:textSize="10sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/nav_profile"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/glass_card_bg"
+                android:backgroundTint="#1AFF8E9C">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_myplaces" app:tint="@color/melodify_pink" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Profile" android:textColor="@color/melodify_pink" android:textSize="10sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
