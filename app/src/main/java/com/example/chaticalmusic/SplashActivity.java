@@ -125,12 +125,24 @@ public class SplashActivity extends AppCompatActivity {
                     .putString("display_name", enteredName)
                     .apply();
 
-            // Write to /users/{uid}/display_name in Firebase
+            FirebaseUser user = mAuth.getCurrentUser();
+            String photoUrl = "";
+            if (user != null && user.getPhotoUrl() != null) {
+                photoUrl = user.getPhotoUrl().toString();
+            } else {
+                photoUrl = "https://ui-avatars.com/api/?name=" + enteredName + "&background=random";
+            }
+            prefs.edit().putString("photo_url", photoUrl).apply();
+
+            // Write to /users/{uid} in Firebase
+            java.util.Map<String, Object> userUpdate = new java.util.HashMap<>();
+            userUpdate.put("display_name", enteredName);
+            userUpdate.put("photo_url", photoUrl);
+
             com.google.firebase.database.FirebaseDatabase.getInstance()
                     .getReference("users")
                     .child(uid)
-                    .child("display_name")
-                    .setValue(enteredName)
+                    .updateChildren(userUpdate)
                     .addOnCompleteListener(dbTask -> {
                         bottomSheet.dismiss();
                         mStatusText.setText("Authenticated successfully!");
