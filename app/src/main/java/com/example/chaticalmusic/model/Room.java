@@ -11,6 +11,7 @@ public class Room {
     private boolean needs_new_host;
     private long host_disconnected_at;
     private String room_code;
+    private java.util.Map<String, Boolean> co_djs;
 
     // Required default constructor for Firebase
     public Room() {
@@ -87,5 +88,13 @@ public class Room {
 
     public void setRoom_code(String room_code) {
         this.room_code = room_code;
+    }
+
+    public java.util.Map<String, Boolean> getCo_djs() {
+        return co_djs;
+    }
+
+    public void setCo_djs(java.util.Map<String, Boolean> co_djs) {
+        this.co_djs = co_djs;
     }
 }

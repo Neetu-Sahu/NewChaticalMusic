@@ -33,4 +33,7 @@ public final class FirebasePaths {
     public static final String CHAT_MESSAGES = "chat_messages";
     public static final String EMOJI_EXPLOSIONS = "emoji_explosions";
     public static final String AUX_REQUESTS = "aux_requests";
+    public static final String USERS = "users";
+    public static final String TYPING = "typing";
+    public static final String CO_DJS = "co_djs";
 }
