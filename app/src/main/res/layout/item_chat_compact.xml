@@ -6,9 +6,9 @@
     android:paddingHorizontal="12dp"
     android:paddingVertical="2dp">
 
-    <!-- Indentation spacer -->
+    <!-- Indentation spacer (Width matches avatar + margin) -->
     <View
-        android:layout_width="16dp"
+        android:layout_width="40dp"
         android:layout_height="0dp" />
 
     <LinearLayout
@@ -16,6 +16,50 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical">
+
+        <!-- Reply Preview Bar for Compact -->
+        <LinearLayout
+            android:id="@+id/reply_preview_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/glass_card_bg"
+            android:backgroundTint="#22FFFFFF"
+            android:padding="4dp"
+            android:layout_marginBottom="2dp"
+            android:visibility="gone">
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="#1DB954" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="6dp">
+
+                <TextView
+                    android:id="@+id/reply_preview_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User"
+                    android:textColor="#1DB954"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/reply_preview_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Message"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="10sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/chat_text"
