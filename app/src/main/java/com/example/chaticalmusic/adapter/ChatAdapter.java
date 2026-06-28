@@ -3,10 +3,12 @@ package com.example.chaticalmusic.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.chaticalmusic.R;
 import com.example.chaticalmusic.model.ChatMessage;
 
@@ -18,15 +20,21 @@ import java.util.Locale;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    public interface OnMessageLongClickListener {
+        void onMessageLongClick(ChatMessage message);
+    }
+
     private static final int VIEW_TYPE_UNGROUPED = 0;
     private static final int VIEW_TYPE_GROUPED = 1;
 
     private final List<ChatMessage> mMessages = new ArrayList<>();
     private final String mCurrentUid;
+    private final OnMessageLongClickListener mLongClickListener;
     private final SimpleDateFormat mTimeFormatter = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
-    public ChatAdapter(String currentUid) {
+    public ChatAdapter(String currentUid, OnMessageLongClickListener longClickListener) {
         this.mCurrentUid = currentUid;
+        this.mLongClickListener = longClickListener;
     }
 
     public void setMessages(List<ChatMessage> messages) {
@@ -85,12 +93,34 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 uHolder.mSender.setTextColor(0xFF8E8E93); // Gray
             }
 
+            Glide.with(uHolder.itemView.getContext())
+                    .load(message.getSender_photo_url())
+                    .placeholder(R.drawable.ic_music_placeholder)
+                    .circleCrop()
+                    .into(uHolder.mAvatar);
+
             if (showTime) {
                 uHolder.mTimestamp.setVisibility(View.VISIBLE);
                 uHolder.mTimestamp.setText(timeStr);
             } else {
                 uHolder.mTimestamp.setVisibility(View.GONE);
             }
+
+            // Reply logic
+            if (message.isIs_reply()) {
+                uHolder.mReplyContainer.setVisibility(View.VISIBLE);
+                uHolder.mReplyName.setText(message.getReplied_to_name());
+                uHolder.mReplyText.setText(message.getReplied_to_text());
+            } else {
+                uHolder.mReplyContainer.setVisibility(View.GONE);
+            }
+
+            uHolder.itemView.setOnLongClickListener(v -> {
+                if (mLongClickListener != null) {
+                    mLongClickListener.onMessageLongClick(message);
+                }
+                return true;
+            });
         } else if (holder instanceof GroupedViewHolder) {
             GroupedViewHolder gHolder = (GroupedViewHolder) holder;
             gHolder.mText.setText(message.getMessage_text());
@@ -101,6 +131,22 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             } else {
                 gHolder.mTimestamp.setVisibility(View.GONE);
             }
+
+            // Reply logic
+            if (message.isIs_reply()) {
+                gHolder.mReplyContainer.setVisibility(View.VISIBLE);
+                gHolder.mReplyName.setText(message.getReplied_to_name());
+                gHolder.mReplyText.setText(message.getReplied_to_text());
+            } else {
+                gHolder.mReplyContainer.setVisibility(View.GONE);
+            }
+
+            gHolder.itemView.setOnLongClickListener(v -> {
+                if (mLongClickListener != null) {
+                    mLongClickListener.onMessageLongClick(message);
+                }
+                return true;
+            });
         }
     }
 
@@ -125,26 +171,40 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     static class UngroupedViewHolder extends RecyclerView.ViewHolder {
+        ImageView mAvatar;
         TextView mSender;
         TextView mText;
         TextView mTimestamp;
+        View mReplyContainer;
+        TextView mReplyName;
+        TextView mReplyText;
 
         UngroupedViewHolder(@NonNull View itemView) {
             super(itemView);
+            mAvatar = itemView.findViewById(R.id.chat_sender_avatar);
             mSender = itemView.findViewById(R.id.chat_sender_name);
             mText = itemView.findViewById(R.id.chat_text);
             mTimestamp = itemView.findViewById(R.id.chat_timestamp);
+            mReplyContainer = itemView.findViewById(R.id.reply_preview_container);
+            mReplyName = itemView.findViewById(R.id.reply_preview_name);
+            mReplyText = itemView.findViewById(R.id.reply_preview_text);
         }
     }
 
     static class GroupedViewHolder extends RecyclerView.ViewHolder {
         TextView mText;
         TextView mTimestamp;
+        View mReplyContainer;
+        TextView mReplyName;
+        TextView mReplyText;
 
         GroupedViewHolder(@NonNull View itemView) {
             super(itemView);
             mText = itemView.findViewById(R.id.chat_text);
             mTimestamp = itemView.findViewById(R.id.chat_timestamp);
+            mReplyContainer = itemView.findViewById(R.id.reply_preview_container);
+            mReplyName = itemView.findViewById(R.id.reply_preview_name);
+            mReplyText = itemView.findViewById(R.id.reply_preview_text);
         }
     }
 }
