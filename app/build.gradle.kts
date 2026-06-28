@@ -82,5 +82,7 @@ dependencies {
 
     // UI Extra
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.palette:palette:1.+")
+    implementation("com.airbnb.android:lottie:6.4.0")
 }
