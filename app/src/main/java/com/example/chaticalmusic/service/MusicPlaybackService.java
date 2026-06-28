@@ -57,17 +57,21 @@ public class MusicPlaybackService extends MediaSessionService {
     private String mUid;
     private String mHostId;
     private boolean mIsHost;
+    private boolean mIsCoDj;
+    private final List<String> mCoDjUids = new ArrayList<>();
 
     private DatabaseReference mRoomsRef;
     private DatabaseReference mRoomMetaRef;
     private DatabaseReference mPlaybackStateRef;
     private DatabaseReference mPresenceRef;
     private DatabaseReference mQueueRef;
+    private DatabaseReference mCoDjsRef;
 
     private ValueEventListener mRoomMetaListener;
     private ValueEventListener mPlaybackStateListener;
     private ValueEventListener mNeedsNewHostListener;
     private ValueEventListener mQueueListener;
+    private ValueEventListener mCoDjsListener;
 
     private DatabaseReference mConnectedRef;
     private ValueEventListener mConnectionListener;
@@ -201,7 +205,7 @@ public class MusicPlaybackService extends MediaSessionService {
                             leaveRoom();
                             return Futures.immediateFuture(new SessionResult(SessionResult.RESULT_SUCCESS));
                         } else if (customCommand.customAction.equals("SKIP_TRACK")) {
-                            if (mIsHost && mCurrentTrackKey != null) {
+                            if ((mIsHost || mIsCoDj) && mCurrentTrackKey != null) {
                                 mQueueRef.child(mCurrentTrackKey).removeValue();
                             }
                             return Futures.immediateFuture(new SessionResult(SessionResult.RESULT_SUCCESS));
@@ -223,6 +227,7 @@ public class MusicPlaybackService extends MediaSessionService {
         mRoomMetaRef = mRoomsRef.child(FirebasePaths.ROOM_META);
         mPlaybackStateRef = mRoomsRef.child(FirebasePaths.PLAYBACK_STATE);
         mPresenceRef = mRoomsRef.child(FirebasePaths.PRESENCE).child(mUid);
+        mCoDjsRef = mRoomMetaRef.child(FirebasePaths.CO_DJS);
 
         // Step 5a — Presence Setup
         mPresenceRef.setValue(true);
@@ -261,6 +266,23 @@ public class MusicPlaybackService extends MediaSessionService {
             public void onCancelled(@NonNull DatabaseError error) {}
         };
         mRoomMetaRef.addValueEventListener(mRoomMetaListener);
+
+        // Listen to Co-DJs
+        mCoDjsListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                mCoDjUids.clear();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Boolean isCoDj = child.getValue(Boolean.class);
+                    if (isCoDj != null && isCoDj) mCoDjUids.add(child.getKey());
+                }
+                mIsCoDj = mCoDjUids.contains(mUid);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        };
+        mCoDjsRef.addValueEventListener(mCoDjsListener);
 
         // Step 5b — Guest Fallback Listener
         mNeedsNewHostListener = new ValueEventListener() {
@@ -487,7 +509,7 @@ public class MusicPlaybackService extends MediaSessionService {
         mQueueListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!mIsHost) return;
+                if (!mIsHost && !mIsCoDj) return;
 
                 List<DataSnapshot> children = new ArrayList<>();
                 if (snapshot.exists()) {
@@ -547,7 +569,8 @@ public class MusicPlaybackService extends MediaSessionService {
                 }
 
                 // 2. Downvote Skip Check for currently playing track Q[0]
-                if (firstKey != null && firstKey.equals(mCurrentTrackKey)) {
+                if (firstChild.getKey() != null && firstChild.getKey().equals(mCurrentTrackKey)) {
+                    final String trackKey = firstChild.getKey();
                     Integer downvotesObj = firstChild.child(FirebasePaths.DOWNVOTES).getValue(Integer.class);
                     int downvotes = downvotesObj != null ? downvotesObj : 0;
 
@@ -557,12 +580,12 @@ public class MusicPlaybackService extends MediaSessionService {
                     presenceRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot presenceSnapshot) {
-                            if (!mIsHost) return;
+                            if (!mIsHost && !mIsCoDj) return;
                             long activeMembers = presenceSnapshot.getChildrenCount();
                             if (activeMembers == 0) activeMembers = 1;
 
                             if (downvotes > (activeMembers / 2.0)) {
-                                mQueueRef.child(firstKey).removeValue();
+                                mQueueRef.child(trackKey).removeValue();
                             }
                         }
 
@@ -585,7 +608,7 @@ public class MusicPlaybackService extends MediaSessionService {
                         presenceRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot presenceSnapshot) {
-                                if (!mIsHost) return;
+                                if (!mIsHost && !mIsCoDj) return;
                                 long activeMembers = presenceSnapshot.getChildrenCount();
                                 if (activeMembers == 0) activeMembers = 1;
 
@@ -628,6 +651,11 @@ public class MusicPlaybackService extends MediaSessionService {
         if (mQueueRef != null && mQueueListener != null) {
             mQueueRef.removeEventListener(mQueueListener);
             mQueueListener = null;
+        }
+
+        if (mCoDjsRef != null && mCoDjsListener != null) {
+            mCoDjsRef.removeEventListener(mCoDjsListener);
+            mCoDjsListener = null;
         }
 
         if (mConnectedRef != null && mConnectionListener != null) {
