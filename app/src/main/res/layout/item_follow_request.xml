@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:gravity="center_vertical">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/request_avatar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:shapeAppearanceOverlay="@style/RoundedCorner16dp"
+        android:src="@drawable/ic_user_placeholder"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp">
+
+        <TextView
+            android:id="@+id/request_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User Name"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sent you a follow request"
+            android:textColor="@color/melodify_text_secondary"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_accept_request"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/glass_card_bg"
+            android:backgroundTint="@color/melodify_accent_green"
+            android:src="@android:drawable/ic_input_add"
+            app:tint="@color/melodify_background" />
+
+        <ImageButton
+            android:id="@+id/btn_decline_request"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/glass_card_bg"
+            android:backgroundTint="@color/melodify_pink"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:tint="@color/melodify_background" />
+    </LinearLayout>
+
+</LinearLayout>
