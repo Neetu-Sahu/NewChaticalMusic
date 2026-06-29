@@ -54,6 +54,31 @@
             android:name=".JoinRoomActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".DmListActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".DirectChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".FollowListActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".FollowRequestsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RoomQueueActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MemberListActivity"
+            android:exported="false" />
+
         <service
             android:name=".service.MusicPlaybackService"
             android:exported="true"
