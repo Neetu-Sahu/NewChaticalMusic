@@ -2,4 +2,15 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Melodify Palette -->
+    <color name="melodify_background">#C34B0B32</color>
+    <color name="melodify_pink">#FF829B</color>
+    <color name="melodify_pink_dark">#D15F6D</color>
+    <color name="melodify_card">#251422</color>
+    <color name="melodify_card_light">#3A1D31</color>
+    <color name="melodify_text_secondary">#B38E93</color>
+
+    <!-- Functional Accents -->
+    <color name="melodify_accent_green">#1DB954</color>
 </resources>
