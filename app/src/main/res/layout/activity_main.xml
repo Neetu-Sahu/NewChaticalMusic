@@ -5,176 +5,170 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/dark_gradient_bg"
-    tools:context=".MainActivity">
+    android:background="@drawable/heartbeat_animated_bg">
 
-    <!-- Top Header -->
-    <LinearLayout
+    <!-- Background Animation Container -->
+    <FrameLayout
+        android:id="@+id/love_animation_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.3"
+        android:clickable="false"
+        android:focusable="false" />
+
+    <!-- Top Bar -->
+    <RelativeLayout
         android:id="@+id/header_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp"
+        android:padding="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/welcome_text"
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="32dp"
+            android:src="@drawable/logo"
+            android:scaleType="fitStart"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="Melodify Logo" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome to"
-            android:textColor="#8E8E93"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textAllCaps="true"
-            android:letterSpacing="0.1"/>
+            android:orientation="horizontal"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true">
 
-        <TextView
-            android:id="@+id/app_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="MusicalChat"
-            android:textColor="#FFFFFF"
-            android:textSize="32sp"
-            android:textStyle="bold"/>
-    </LinearLayout>
+            <TextView
+                android:id="@+id/btn_join_room_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="JOIN"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:background="@drawable/edit_text_bg"
+                android:layout_marginEnd="8dp" />
 
-    <!-- Room Entry Section (Card style) -->
-    <LinearLayout
-        android:id="@+id/room_card"
+            <TextView
+                android:id="@+id/btn_create_room_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CREATE"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:background="@drawable/edit_text_bg" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginHorizontal="24dp"
-        android:padding="24dp"
-        android:background="@drawable/glass_card_bg"
-        android:elevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/header_layout">
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav_container">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Join or Create Room"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp"/>
-
-        <!-- Custom Styled EditText -->
-        <EditText
-            android:id="@+id/room_name_input"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="@drawable/edit_text_bg"
-            android:hint="Enter room name..."
-            android:textColorHint="#55FFFFFF"
-            android:textColor="#FFFFFF"
-            android:paddingHorizontal="16dp"
-            android:inputType="text"
-            android:maxLines="1"
-            android:textSize="16sp"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Private Room Switch Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:text="Explore Rooms"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:paddingHorizontal="16dp"
+                android:layout_marginTop="8dp" />
 
+            <!-- Featured Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/featured_card"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp">
+
+                <ImageView
+                    android:id="@+id/featured_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/gradient_player_bg"
+                    android:scaleType="centerCrop" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="bottom"
+                    android:padding="20dp"
+                    android:background="#66000000">
+
+                    <TextView
+                        android:id="@+id/featured_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="FEATURED • Loading..."
+                        android:textColor="@color/melodify_pink"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/featured_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Discover New Music"
+                        android:textColor="@color/white"
+                        android:textSize="26sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Discover More Row -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:layout_marginTop="30dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Private Room"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
+                    android:text="Discover More"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
+                <ImageView
+                    android:id="@+id/btn_room_search"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:src="@android:drawable/ic_menu_search"
+                    app:tint="@color/melodify_pink"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:contentDescription="Search Rooms" />
+            </RelativeLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Only joinable via search"
-                    android:textColor="#8E8E93"
-                    android:textSize="12sp"
-                    android:layout_marginTop="2dp" />
-            </LinearLayout>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/private_room_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:thumbTint="#1DB954"
-                app:trackTint="#55FFFFFF" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/create_room_btn"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:backgroundTint="#1DB954"
-            android:text="Create Room"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:layout_marginBottom="12dp"
-            app:cornerRadius="26dp"/>
-
-        <Button
-            android:id="@+id/join_room_btn"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:backgroundTint="#2C2C2E"
-            android:text="Join Room"
-            android:textColor="#1DB954"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            app:cornerRadius="26dp"
-            app:strokeColor="#1DB954"
-            app:strokeWidth="1dp"/>
-    </LinearLayout>
-
-    <!-- Public Rooms Section -->
-    <LinearLayout
-        android:id="@+id/public_rooms_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
-        android:padding="16dp"
-        android:background="@drawable/glass_card_bg"
-        app:layout_constraintTop_toBottomOf="@id/room_card"
-        app:layout_constraintBottom_toTopOf="@id/search_btn_container">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Active Public Rooms"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
+            <!-- Dynamic Room List -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/public_rooms_recycler"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="vertical"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                tools:listitem="@layout/item_public_room" />
 
             <TextView
                 android:id="@+id/no_public_rooms_text"
@@ -182,44 +176,128 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="No active public rooms"
-                android:textColor="#8E8E93"
-                android:textSize="14sp"
-                android:visibility="gone"/>
-        </FrameLayout>
-    </LinearLayout>
+                android:textColor="@color/melodify_text_secondary"
+                android:visibility="gone"
+                android:layout_marginTop="20dp" />
 
-    <!-- Search Section (Separate button container at bottom) -->
+            <!-- Hidden logic triggers -->
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/private_room_switch"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+            <Button
+                android:id="@+id/create_room_btn"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+            <Button
+                android:id="@+id/join_room_btn"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+            <Button
+                android:id="@+id/search_music_btn"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Nav & Mini Player container -->
     <LinearLayout
-        android:id="@+id/search_btn_container"
+        android:id="@+id/bottom_nav_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Want to listen solo first?"
-            android:textColor="#8E8E93"
-            android:textSize="14sp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="12dp"/>
-
-        <Button
-            android:id="@+id/search_music_btn"
+        <!-- Mini Player -->
+        <LinearLayout
+            android:id="@+id/mini_player_bar"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:backgroundTint="#2C2C2E"
-            android:text="Search &amp; Play Music"
-            android:textColor="#1DB954"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            app:cornerRadius="26dp"
-            app:strokeColor="#1DB954"
-            app:strokeWidth="1dp"/>
+            android:layout_height="64dp"
+            android:background="@drawable/glass_card_bg"
+            android:backgroundTint="#CC251422"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:gravity="center_vertical"
+            android:visibility="gone">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/mini_art"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:shapeAppearanceOverlay="@style/RoundedCorner6dp"
+                android:src="@drawable/ic_music_placeholder"
+                android:scaleType="centerCrop" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/mini_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Track Title"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+
+                <TextView
+                    android:id="@+id/mini_artist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Artist Name"
+                    android:textColor="@color/melodify_text_secondary"
+                    android:textSize="11sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/mini_play_pause"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_media_play"
+                app:tint="@color/white" />
+        </LinearLayout>
+
+        <!-- Navigation Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout style="@style/NavItem" android:id="@+id/nav_lobby" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground">
+                <ImageView style="@style/NavIcon" android:src="@android:drawable/ic_menu_today" app:tint="@color/melodify_pink" />
+                <TextView style="@style/NavText" android:text="Lobby" android:textColor="@color/melodify_pink" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/NavItem" android:id="@+id/nav_search" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground">
+                <ImageView style="@style/NavIcon" android:src="@android:drawable/ic_menu_search" />
+                <TextView style="@style/NavText" android:text="Search" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/NavItem" android:id="@+id/nav_dm" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground">
+                <ImageView style="@style/NavIcon" android:src="@android:drawable/stat_notify_chat" />
+                <TextView style="@style/NavText" android:text="DM" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/NavItem" android:id="@+id/nav_profile" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground">
+                <ImageView style="@style/NavIcon" android:src="@android:drawable/ic_menu_myplaces" />
+                <TextView style="@style/NavText" android:text="Profile" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <ProgressBar
@@ -227,7 +305,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:indeterminateTint="#1DB954"
+        android:indeterminateTint="@color/melodify_pink"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
