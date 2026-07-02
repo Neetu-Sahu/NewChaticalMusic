@@ -1,109 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingHorizontal="12dp"
-    android:paddingVertical="4dp">
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="1dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/chat_sender_avatar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        app:shapeAppearanceOverlay="@style/RoundedCorner16dp"
+        android:src="@drawable/ic_user_placeholder"
+        android:scaleType="centerCrop" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/chat_bubble"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_toEndOf="@id/chat_sender_avatar"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="60dp"
+        android:background="@drawable/whatsapp_bubble_other"
+        android:orientation="vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="4dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:elevation="1dp">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/chat_sender_avatar"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="8dp"
-            android:scaleType="centerCrop"
-            app:shapeAppearanceOverlay="@style/RoundedCorner16dp"
-            android:background="#2C2C2E"
-            android:src="@drawable/ic_music_placeholder" />
-
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/chat_sender_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:text="User Name"
+            android:textColor="#075E54"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="1dp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/chat_sender_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="User_1234"
-                    android:textColor="#1DB954"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/chat_timestamp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:textColor="#8E8E93"
-                    android:textSize="10sp"
-                    android:visibility="gone" />
+        <!-- Reply Container -->
+        <LinearLayout
+            android:id="@+id/reply_preview_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#10000000"
+            android:orientation="horizontal"
+            android:padding="4dp"
+            android:layout_marginBottom="2dp"
+            android:visibility="gone">
+            <View android:id="@+id/reply_bar_line" android:layout_width="3dp" android:layout_height="match_parent" android:background="#075E54" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:orientation="vertical" android:layout_weight="1" android:layout_marginStart="6dp">
+                <TextView android:id="@+id/reply_preview_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#075E54" android:textSize="11sp" android:textStyle="bold" />
+                <TextView android:id="@+id/reply_preview_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#66000000" android:textSize="11sp" android:maxLines="1" android:ellipsize="end" />
             </LinearLayout>
+        </LinearLayout>
 
-            <!-- Reply Preview Bar -->
-            <LinearLayout
-                android:id="@+id/reply_preview_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/glass_card_bg"
-                android:backgroundTint="#22FFFFFF"
-                android:padding="6dp"
-                android:layout_marginTop="4dp"
-                android:visibility="gone">
-
-                <View
-                    android:layout_width="2dp"
-                    android:layout_height="match_parent"
-                    android:background="#1DB954" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginStart="8dp">
-
-                    <TextView
-                        android:id="@+id/reply_preview_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="User"
-                        android:textColor="#1DB954"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/reply_preview_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Message"
-                        android:textColor="#B3FFFFFF"
-                        android:textSize="11sp"
-                        android:maxLines="1"
-                        android:ellipsize="end" />
-                </LinearLayout>
-            </LinearLayout>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/chat_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hello, this is a song comment!"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
+                android:text="Message text goes here"
+                android:textColor="#000000"
+                android:textSize="15sp"
+                android:paddingEnd="50dp" /> <!-- Buffer for timestamp -->
+
+            <TextView
+                android:id="@+id/chat_timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/chat_text"
+                android:layout_alignParentEnd="true"
+                android:text="10:42 AM"
+                android:textColor="#77000000"
+                android:textSize="10sp"
+                android:layout_marginStart="6dp"
+                android:paddingBottom="1dp" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/chat_reactions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:layout_marginTop="2dp"
+            android:visibility="gone"
+            tools:text="❤️ 2" />
+
+        <Button
+            android:id="@+id/btn_approve_request"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginTop="4dp"
+            android:backgroundTint="#075E54"
+            android:text="Approve"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:cornerRadius="4dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp" />
+
     </LinearLayout>
-</LinearLayout>
+
+    <!-- alignment placeholders -->
+    <View
+        android:id="@+id/chat_status_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+    <TextView
+        android:id="@+id/chat_read_receipt"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+
+</RelativeLayout>
