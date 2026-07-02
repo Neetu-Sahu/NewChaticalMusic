@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/melodify_card">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose Wallpaper"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:alignmentMode="alignMargins"
+        android:rowOrderPreserved="false">
+
+        <!-- Default/Gradient -->
+        <LinearLayout
+            android:id="@+id/wall_gradient"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="@drawable/heartbeat_animated_bg"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Gradient" android:textColor="@color/white" android:textStyle="bold" android:shadowColor="@color/black" android:shadowRadius="2" />
+        </LinearLayout>
+
+        <!-- Dark -->
+        <LinearLayout
+            android:id="@+id/wall_dark"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="#121212"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Dark" android:textColor="@color/white" android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Light -->
+        <LinearLayout
+            android:id="@+id/wall_light"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="#F5F5F5"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Light" android:textColor="@color/black" android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Blue/Sky (New) -->
+        <LinearLayout
+            android:id="@+id/wall_blue"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="#1A237E"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Deep Blue" android:textColor="@color/white" android:textStyle="bold" />
+        </LinearLayout>
+
+    </GridLayout>
+
+    <Button
+        android:id="@+id/btn_gallery_wall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Pick from Gallery"
+        android:backgroundTint="@color/melodify_pink"
+        android:textColor="@color/white" />
+
+</LinearLayout>
