@@ -4,48 +4,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
+    android:background="@color/melodify_background"
     tools:context=".SplashActivity">
 
+    <!-- Full Screen Background Image -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_melodify_logo"
+        android:scaleType="centerCrop"
+        android:contentDescription="Splash Background" />
+
+    <!-- Interactive Content Overlay -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/app_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="MusicalChat"
-            android:textColor="#FFFFFF"
-            android:textSize="36sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="24dp"/>
+        android:layout_marginBottom="80dp"
+        android:padding="32dp">
 
         <ProgressBar
             android:id="@+id/progress_bar"
-            style="?android:attr/progressBarStyle"
+            style="?android:attr/progressBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:indeterminateTint="#1DB954"
-            android:layout_marginBottom="16dp"/>
+            android:indeterminateTint="@color/melodify_pink" />
 
         <TextView
             android:id="@+id/status_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Connecting to Firebase..."
-            android:textColor="#B3B3B3"
-            android:textSize="16sp" />
+            android:text="Loading..."
+            android:textColor="@color/melodify_pink"
+            android:textSize="12sp"
+            android:layout_marginTop="8dp"
+            android:alpha="0.8" />
 
+        <!-- Sign In Container -->
         <LinearLayout
             android:id="@+id/sign_in_container"
-            android:layout_width="280dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
@@ -55,13 +55,12 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/btn_google_sign_in"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                app:cardCornerRadius="24dp"
-                app:cardBackgroundColor="#FFFFFF"
+                android:layout_height="56dp"
+                app:cardCornerRadius="28dp"
+                app:cardBackgroundColor="@color/white"
                 android:clickable="true"
                 android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:layout_marginBottom="16dp">
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -71,37 +70,35 @@
                     android:gravity="center">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:src="@drawable/ic_google_logo"
                         android:layout_marginEnd="12dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sign in with Google"
+                        android:text="Continue with Google"
                         android:textColor="#000000"
-                        android:textSize="15sp"
+                        android:textSize="16sp"
                         android:textStyle="bold"/>
-
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/btn_guest_sign_in"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Continue as Guest"
-                android:textColor="#1DB954"
-                android:textSize="15sp"
+                android:text="Enter as Guest"
+                android:textColor="@color/melodify_pink"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:padding="8dp"
+                android:layout_marginTop="20dp"
+                android:padding="12dp"
                 android:clickable="true"
                 android:focusable="true"/>
 
         </LinearLayout>
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
