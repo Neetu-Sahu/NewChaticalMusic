@@ -81,7 +81,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.ViewHolder
 
             Glide.with(itemView.getContext())
                     .load(member.getPhotoUrl())
-                    .placeholder(R.drawable.ic_music_placeholder)
+                    .placeholder(R.drawable.ic_user_placeholder)
                     .circleCrop()
                     .into(avatar);
 
