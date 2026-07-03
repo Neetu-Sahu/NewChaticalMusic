@@ -28,7 +28,7 @@ public class SplashActivity extends AppCompatActivity {
     private TextView mStatusText;
     private android.widget.ProgressBar mProgressBar;
     private View mSignInContainer;
-    private androidx.cardview.widget.CardView mGoogleBtn;
+    private View mGoogleBtn;
     private TextView mGuestBtn;
     private FirebaseAuth mAuth;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -140,7 +140,7 @@ public class SplashActivity extends AppCompatActivity {
             userUpdate.put("photo_url", photoUrl);
 
             com.google.firebase.database.FirebaseDatabase.getInstance()
-                    .getReference("users")
+                    .getReference(FirebasePaths.USERS)
                     .child(uid)
                     .updateChildren(userUpdate)
                     .addOnCompleteListener(dbTask -> {
