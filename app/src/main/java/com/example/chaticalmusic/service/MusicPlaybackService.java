@@ -230,7 +230,7 @@ public class MusicPlaybackService extends MediaSessionService {
         mCoDjsRef = mRoomMetaRef.child(FirebasePaths.CO_DJS);
 
         // Step 5a — Presence Setup
-        mPresenceRef.setValue(true);
+        mPresenceRef.setValue(ServerValue.TIMESTAMP);
         mPresenceRef.onDisconnect().removeValue();
 
         // Listen to room_meta for host identification
