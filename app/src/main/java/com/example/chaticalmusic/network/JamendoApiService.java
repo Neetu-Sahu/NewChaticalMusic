@@ -12,9 +12,24 @@ public interface JamendoApiService {
             @Query("client_id") String clientId,
             @Query("format") String format,
             @Query("limit") int limit,
-            @Query("search") String search,
+            @Query("namesearch") String namesearch,
+            @Query("tags") String tags,
+            @Query("fuzzytags") String fuzzytags,
+            @Query("boost") String boost,
+            @Query("order") String order,
             @Query("audioformat") String audioformat,
             @Query("include") String include,
+            @Query("imagesize") String imagesize,
+            @Query("type") String type
+    );
+
+    @GET("tracks/")
+    Call<JamendoResponse> getPopularTracks(
+            @Query("client_id") String clientId,
+            @Query("format") String format,
+            @Query("limit") int limit,
+            @Query("audioformat") String audioformat,
+            @Query("boost") String boost,
             @Query("imagesize") String imagesize
     );
 }
