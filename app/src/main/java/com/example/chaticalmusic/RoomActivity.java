@@ -34,6 +34,7 @@ import androidx.media3.session.SessionToken;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.example.chaticalmusic.adapter.ChatAdapter;
 import com.example.chaticalmusic.adapter.MemberAdapter;
@@ -68,7 +69,7 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
     private TextView mMemberCountText;
     private TextView mTrackTitle;
     private TextView mTrackArtist;
-    private ImageView mHostAvatar;
+    private com.google.android.material.imageview.ShapeableImageView mHostAvatar, mTopMusicBtn;
     private TextView mHostWarningBanner;
     private TextView mQueueEmptyBanner;
     private ImageView mTrackArt;
@@ -78,16 +79,25 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
     private LinearLayout mHostControlsContainer;
     private ImageButton mPlayPauseBtn;
     private ImageButton mSkipBtn;
-    private Button mAddSongBtn;
+    private ImageButton mAddSongBtn;
     private TextView mEmojiFireBtn;
     private TextView mEmojiHeartBtn;
     private TextView mEmojiWowBtn;
+    private TextView mEmojiAngryBtn;
+    private TextView mEmojiFavoriteBtn;
     private EditText mChatInput;
     private ImageButton mChatSendBtn;
     private RecyclerView mQueueRecycler;
     private RecyclerView mChatRecycler;
     private TextView mTypingIndicatorText;
-    private View mReplyDraftBar;
+    private TextView mMicToggleBtn, mWaveBtn, mDjBtn, mCoDjBtn, mOpenQueueBtn;
+    private View mReplyDraftBar, mJoinSeatBtn, mPlayerExpandedControls, mChatContainer;
+    private ImageButton mBtnMore, mBtnMinimizePlayer;
+    private com.google.android.material.imageview.ShapeableImageView mSeat2Avatar, mSeat3Avatar, mSeat4Avatar, mSeat5Avatar, mSeat6Avatar;
+    private TextView mSeat2Name, mSeat3Name, mSeat4Name, mSeat5Name, mSeat6Name;
+    private LottieAnimationView mHostLottie, mSeat2Lottie, mSeat3Lottie, mSeat4Lottie, mSeat5Lottie, mSeat6Lottie;
+    private String mSeat2Uid, mSeat3Uid, mSeat4Uid, mSeat5Uid, mSeat6Uid;
+    private LoveAnimationHelper mLoveAnimationHelper;
     private TextView mReplyDraftName;
     private TextView mReplyDraftText;
     private ImageButton mCancelReplyBtn;
@@ -112,6 +122,7 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
     private String mCurrentHostId;
     private boolean mIsHost;
     private boolean mIsCoDj;
+    private boolean mNeedsNewHost;
     private boolean mIsSeekBarTracking = false;
     private ChatMessage mMessageToReply;
 
@@ -126,7 +137,9 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
     private DatabaseReference mChatRef;
     private DatabaseReference mQueueRef;
     private DatabaseReference mPresenceRef;
+    private DatabaseReference mSeatsRef;
     private DatabaseReference mTypingRef;
+    private DatabaseReference mVoiceActiveRef;
 
     private ValueEventListener mRoomMetaListener;
     private ValueEventListener mPresenceListener;
@@ -134,6 +147,7 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
     private ValueEventListener mChatListener;
     private ValueEventListener mTypingListener;
     private ValueEventListener mCoDjsListener;
+    private ValueEventListener mVoiceActiveListener;
 
     // AUX request system
     private Button mRequestAuxBtn;
@@ -150,6 +164,34 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
     private ChatAdapter mChatAdapter;
 
     private final Handler mUpdateHandler = new Handler(Looper.getMainLooper());
+    private final Handler mRhythmHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mRhythmRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mUid != null) {
+                FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(mUid).child("rhythm_score").runTransaction(new Transaction.Handler() {
+                    @NonNull @Override public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                        Long score = currentData.getValue(Long.class);
+                        if (score == null) score = 0L;
+                        currentData.setValue(score + 10); // +10 points every minute
+                        return Transaction.success(currentData);
+                    }
+                    @Override public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {}
+                });
+                FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(mUid).child("shared_hours").runTransaction(new Transaction.Handler() {
+                    @NonNull @Override public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                        Double hours = currentData.getValue(Double.class);
+                        if (hours == null) hours = 0.0;
+                        currentData.setValue(hours + (1.0 / 60.0)); // +1/60th of an hour
+                        return Transaction.success(currentData);
+                    }
+                    @Override public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {}
+                });
+            }
+            mRhythmHandler.postDelayed(this, 60000); // Repeat every minute
+        }
+    };
+
     private final Handler mTypingHandler = new Handler(Looper.getMainLooper());
     private final Runnable mTypingRunnable = () -> {
         if (mTypingRef != null) mTypingRef.child(mUid).setValue(false);
@@ -194,6 +236,9 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
     private int mLocalFireCount = 0;
     private int mLocalHeartCount = 0;
     private int mLocalWowCount = 0;
+    private int mLocalAngryCount = 0;
+    private int mLocalFavoriteCount = 0;
+    private int mLocalWaveCount = 0;
     private int mActiveEmojiCount = 0;
 
     private final Handler mEmojiBatchHandler = new Handler(Looper.getMainLooper());
@@ -214,13 +259,16 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.header_bar), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(v.getPaddingLeft(), systemBars.top, v.getPaddingRight(), v.getPaddingBottom());
+            androidx.constraintlayout.widget.ConstraintLayout.LayoutParams lp = (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) v.getLayoutParams();
+            lp.topMargin = systemBars.top;
+            v.setLayoutParams(lp);
             return insets;
         });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.bottom_input_container), (v, insets) -> {
+            Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(), systemBars.bottom);
+            v.setPadding(v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(), Math.max(imeInsets.bottom, systemBars.bottom));
             return insets;
         });
 
@@ -240,6 +288,7 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
         mPhotoUrl = prefs.getString("photo_url", "");
 
         initViews();
+        mRoomNameTitle.setText(mRoomName != null ? mRoomName : "MusicalChat Room");
         setupFirebase();
         setupAdapters();
         setupListeners();
@@ -252,6 +301,7 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
         mTrackTitle = findViewById(R.id.track_title);
         mTrackArtist = findViewById(R.id.track_artist);
         mHostAvatar = findViewById(R.id.host_avatar);
+        mTopMusicBtn = findViewById(R.id.top_music_btn);
         mHostWarningBanner = findViewById(R.id.host_warning_banner);
         mQueueEmptyBanner = findViewById(R.id.queue_empty_banner);
         mTrackArt = findViewById(R.id.track_art);
@@ -265,6 +315,8 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
         mEmojiFireBtn = findViewById(R.id.emoji_fire_btn);
         mEmojiHeartBtn = findViewById(R.id.emoji_heart_btn);
         mEmojiWowBtn = findViewById(R.id.emoji_wow_btn);
+        mEmojiAngryBtn = findViewById(R.id.emoji_angry_btn);
+        mEmojiFavoriteBtn = findViewById(R.id.emoji_favorite_btn);
         mChatInput = findViewById(R.id.chat_input);
         mChatSendBtn = findViewById(R.id.chat_send_btn);
         mQueueRecycler = findViewById(R.id.queue_recycler);
@@ -275,7 +327,39 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
         mRoomCodeText = findViewById(R.id.room_code_text);
         mRequestAuxBtn = findViewById(R.id.request_aux_btn);
         mTypingIndicatorText = findViewById(R.id.typing_indicator_text);
+        mMicToggleBtn = findViewById(R.id.btn_mic_toggle);
+        mWaveBtn = findViewById(R.id.btn_wave); 
+        mDjBtn = findViewById(R.id.btn_dj_info);
+        mCoDjBtn = findViewById(R.id.btn_codj_info);
+        mOpenQueueBtn = findViewById(R.id.btn_open_queue);
         mReplyDraftBar = findViewById(R.id.reply_draft_bar);
+        mPlayerExpandedControls = findViewById(R.id.expanded_player_controls);
+        mChatContainer = findViewById(R.id.chat_container);
+        mBtnMore = findViewById(R.id.btn_room_more);
+        mBtnMinimizePlayer = findViewById(R.id.btn_minimize_player);
+        
+        mSeat2Avatar = findViewById(R.id.seat2_avatar);
+        mSeat3Avatar = findViewById(R.id.seat3_avatar);
+        mSeat4Avatar = findViewById(R.id.seat4_avatar);
+        mSeat5Avatar = findViewById(R.id.seat5_avatar);
+        mSeat6Avatar = findViewById(R.id.seat6_avatar);
+
+        mSeat2Name = findViewById(R.id.seat2_name);
+        mSeat3Name = findViewById(R.id.seat3_name);
+        mSeat4Name = findViewById(R.id.seat4_name);
+        mSeat5Name = findViewById(R.id.seat5_name);
+        mSeat6Name = findViewById(R.id.seat6_name);
+        
+        mHostLottie = findViewById(R.id.host_reaction_lottie);
+        mSeat2Lottie = findViewById(R.id.seat2_reaction_lottie);
+        mSeat3Lottie = findViewById(R.id.seat3_reaction_lottie);
+        mSeat4Lottie = findViewById(R.id.seat4_reaction_lottie);
+        mSeat5Lottie = findViewById(R.id.seat5_reaction_lottie);
+        mSeat6Lottie = findViewById(R.id.seat6_reaction_lottie);
+        
+        mLoveAnimationHelper = new LoveAnimationHelper(findViewById(R.id.love_animation_container));
+        mLoveAnimationHelper.start();
+
         mReplyDraftName = findViewById(R.id.reply_draft_name);
         mReplyDraftText = findViewById(R.id.reply_draft_text);
         mCancelReplyBtn = findViewById(R.id.cancel_reply_btn);
@@ -295,8 +379,6 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
             }
         });
 
-        mRoomNameTitle.setText(mRoomName != null ? mRoomName : "MusicalChat Room");
-
         // Disable seekBar by default until host status is confirmed
         mTrackSeekBar.setEnabled(false);
         mTrackSeekBar.setAlpha(0.4f);
@@ -309,14 +391,17 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
         mChatRef = mRoomRef.child(FirebasePaths.CHAT_MESSAGES);
         mQueueRef = mRoomRef.child(FirebasePaths.QUEUE);
         mPresenceRef = mRoomRef.child(FirebasePaths.PRESENCE);
+        mSeatsRef = mRoomRef.child("seats");
         mEmojiExplosionsRef = mRoomRef.child(FirebasePaths.EMOJI_EXPLOSIONS);
         mPlaybackStateRef = mRoomRef.child(FirebasePaths.PLAYBACK_STATE);
         mAuxRequestsRef = mRoomRef.child(FirebasePaths.AUX_REQUESTS);
         mTypingRef = mRoomRef.child(FirebasePaths.TYPING);
+        mVoiceActiveRef = mRoomRef.child(FirebasePaths.VOICE_ACTIVE);
 
         // Remove status automatically on disconnect
         mAuxRequestsRef.child(mUid).onDisconnect().removeValue();
         mTypingRef.child(mUid).onDisconnect().removeValue();
+        mVoiceActiveRef.child(mUid).onDisconnect().removeValue();
     }
 
     private void setupAdapters() {
@@ -324,18 +409,43 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
         mQueueRecycler.setLayoutManager(new LinearLayoutManager(this));
         mQueueRecycler.setAdapter(mQueueAdapter);
 
-        mChatAdapter = new ChatAdapter(mUid, this::onMessageLongClick);
+        mChatAdapter = new ChatAdapter(mUid, this::onMessageLongClick, this::approveRequestFromChat, this::startReplyMode);
+        mChatAdapter.setIsRoomChat(true);
         mChatRecycler.setLayoutManager(new LinearLayoutManager(this));
         mChatRecycler.setAdapter(mChatAdapter);
+
+        androidx.recyclerview.widget.ItemTouchHelper itemTouchHelper = new androidx.recyclerview.widget.ItemTouchHelper(new SwipeToReplyCallback(this, position -> {
+            Object item = mChatAdapter.getItem(position);
+            if (item instanceof ChatMessage) {
+                startReplyMode((ChatMessage) item);
+            }
+        }));
+        itemTouchHelper.attachToRecyclerView(mChatRecycler);
+    }
+
+    private void approveRequestFromChat(ChatMessage message) {
+        if (!mIsHost) return;
+        
+        String type = message.getRequest_type();
+        String uid = message.getRequest_uid();
+        
+        if ("dj".equals(type)) {
+            mRoomMetaRef.child(FirebasePaths.HOST_ID).setValue(uid);
+            mCoDjsRef.child(uid).removeValue();
+            Toast.makeText(this, "Promoted " + message.getSender_name() + " to DJ!", Toast.LENGTH_SHORT).show();
+        } else if ("codj".equals(type)) {
+            mCoDjsRef.child(uid).setValue(true);
+            Toast.makeText(this, "Promoted " + message.getSender_name() + " to Co-DJ!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void onMessageLongClick(ChatMessage message) {
         CharSequence[] options = new CharSequence[]{"Reply", "Mention @" + message.getSender_name()};
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Message Options")
-                .setItems(options, (dialog, which) -> {
-                    if (which == 0) startReplyMode(message);
-                    else if (which == 1) startMentionMode(message);
+                .setItems(options, (dialog, width) -> {
+                    if (width == 0) startReplyMode(message);
+                    else if (width == 1) startMentionMode(message);
                 })
                 .show();
     }
@@ -364,6 +474,41 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
         mReplyDraftBar.setVisibility(View.GONE);
     }
 
+    private void showRoomMoreMenu() {
+        androidx.appcompat.widget.PopupMenu popup = new androidx.appcompat.widget.PopupMenu(this, mBtnMore);
+        popup.getMenu().add("Leave Chatroom");
+        if (mIsHost) {
+            popup.getMenu().add("Delete Chatroom");
+        }
+        popup.setOnMenuItemClickListener(item -> {
+            if (item.getTitle().equals("Leave Chatroom")) {
+                finish();
+                return true;
+            } else if (item.getTitle().equals("Delete Chatroom")) {
+                deleteRoom();
+                return true;
+            }
+            return false;
+        });
+        popup.show();
+    }
+
+    private void deleteRoom() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Delete Chatroom")
+                .setMessage("Are you sure you want to delete this room? This action cannot be undone.")
+                .setPositiveButton("Delete", (d, w) -> {
+                    mRoomRef.removeValue().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(RoomActivity.this, "Room deleted", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
     private void setupListeners() {
         // Play / Pause Click
         mPlayPauseBtn.setOnClickListener(v -> {
@@ -387,6 +532,26 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
             startActivity(intent);
         });
 
+        mBtnMore.setOnClickListener(v -> showRoomMoreMenu());
+        mBtnMinimizePlayer.setOnClickListener(v -> {
+            if (mPlayerExpandedControls.getVisibility() == View.VISIBLE) {
+                mPlayerExpandedControls.setVisibility(View.GONE);
+                mBtnMinimizePlayer.setImageResource(R.drawable.ic_expand_more);
+            } else {
+                mPlayerExpandedControls.setVisibility(View.VISIBLE);
+                mBtnMinimizePlayer.setImageResource(R.drawable.ic_minimize);
+            }
+        });
+        mOpenQueueBtn.setOnClickListener(v -> {
+            if (mQueueRecycler.getVisibility() == View.VISIBLE) {
+                mQueueRecycler.setVisibility(View.GONE);
+                ((TextView)v).setTextColor(0xFFFFFFFF);
+            } else {
+                mQueueRecycler.setVisibility(View.VISIBLE);
+                ((TextView)v).setTextColor(0xFFFF748D);
+            }
+        });
+
         // Chat Send Click
         mChatSendBtn.setOnClickListener(v -> sendChatMessage(mChatInput.getText().toString().trim()));
 
@@ -394,11 +559,52 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
         mEmojiFireBtn.setOnClickListener(v -> handleEmojiTap("fire"));
         mEmojiHeartBtn.setOnClickListener(v -> handleEmojiTap("heart"));
         mEmojiWowBtn.setOnClickListener(v -> handleEmojiTap("wow"));
+        mEmojiAngryBtn.setOnClickListener(v -> handleEmojiTap("angry"));
+        mEmojiFavoriteBtn.setOnClickListener(v -> handleEmojiTap("favorite"));
 
         mCancelReplyBtn.setOnClickListener(v -> cancelReplyMode());
 
         // Member list click
-        mMemberCountText.setOnClickListener(v -> showMembersDialog());
+        mMemberCountText.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MemberListActivity.class);
+            intent.putExtra("ROOM_ID", mRoomId);
+            startActivity(intent);
+        });
+
+        mMicToggleBtn.setOnClickListener(v -> {
+            boolean isMuted = mMicToggleBtn.getText().toString().contains("Muted");
+            if (isMuted) {
+                mMicToggleBtn.setText("\ud83c\udf99 Live");
+                mMicToggleBtn.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.melodify_pink));
+                if (mVoiceActiveRef != null) mVoiceActiveRef.child(mUid).setValue(true);
+                Toast.makeText(this, "Microphone enabled", Toast.LENGTH_SHORT).show();
+            } else {
+                mMicToggleBtn.setText("\ud83c\udf99 Muted");
+                mMicToggleBtn.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.melodify_text_secondary));
+                if (mVoiceActiveRef != null) mVoiceActiveRef.child(mUid).setValue(false);
+                Toast.makeText(this, "Microphone muted", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mWaveBtn.setOnClickListener(v -> handleEmojiTap("wave"));
+
+        mDjBtn.setOnClickListener(v -> showDjManagementDialog());
+        mCoDjBtn.setOnClickListener(v -> showCoDjManagementDialog());
+
+        mTopMusicBtn.setOnClickListener(v -> {
+            if (mIsHost || mIsCoDj) {
+                Intent intent = new Intent(RoomActivity.this, SearchActivity.class);
+                intent.putExtra("ROOM_ID", mRoomId);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Only DJs can change the music", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        findViewById(R.id.seat2_layout).setOnClickListener(v -> handleSeatClick(2));
+        findViewById(R.id.seat3_layout).setOnClickListener(v -> handleSeatClick(3));
+        findViewById(R.id.seat4_layout).setOnClickListener(v -> handleSeatClick(4));
+        findViewById(R.id.seat1_layout).setOnClickListener(v -> handleHostSeatClick());
 
         // Request AUX click listener
         mRequestAuxBtn.setOnClickListener(v -> {
@@ -451,11 +657,16 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 mActiveMembersCount = (int) snapshot.getChildrenCount();
                 updateMemberCountText();
+
+                if (mNeedsNewHost || mCurrentHostId == null || mCurrentHostId.isEmpty()) {
+                    manageHostAndDjTransitions(snapshot);
+                }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         };
         mPresenceRef.addValueEventListener(mPresenceListener);
+        updateSeatsUI();
 
         // AUX Requests Listener
         mAuxRequestsListener = new ValueEventListener() {
@@ -486,8 +697,14 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
                 if (snapshot.exists()) {
                     String hostId = snapshot.child(FirebasePaths.HOST_ID).getValue(String.class);
                     Boolean needsNewHost = snapshot.child(FirebasePaths.NEEDS_NEW_HOST).getValue(Boolean.class);
+                    mNeedsNewHost = needsNewHost != null && needsNewHost;
                     String roomCode = snapshot.child(FirebasePaths.ROOM_CODE).getValue(String.class);
-                    mRoomCodeText.setText("Code: " + (roomCode != null ? roomCode : "None"));
+                    
+                    if (roomCode != null && !roomCode.isEmpty()) {
+                        mRoomCodeText.setText("Code: " + roomCode);
+                    } else {
+                        mRoomCodeText.setText("Code: None");
+                    }
                     
                     if (hostId != null) {
                         mCurrentHostId = hostId;
@@ -504,7 +721,7 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
                                     String name = userSnapshot.child("display_name").getValue(String.class);
                                     String photo = userSnapshot.child("photo_url").getValue(String.class);
                                     mHostNameSubtitle.setText("DJ: " + (name != null ? name : "User_" + hostId.substring(0, 4)));
-                                    Glide.with(RoomActivity.this).load(photo).placeholder(R.drawable.ic_music_placeholder).circleCrop().into(mHostAvatar);
+                                    Glide.with(RoomActivity.this).load(photo).placeholder(R.drawable.ic_user_placeholder).circleCrop().into(mHostAvatar);
                                 }
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {}
@@ -512,7 +729,13 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
 
                         mHostWarningBanner.setVisibility(needsNewHost != null && needsNewHost ? View.VISIBLE : View.GONE);
                         if (needsNewHost != null && needsNewHost) mHostControlsContainer.setVisibility(View.GONE);
+                        
+                        if (mIsHost) {
+                            removeFromAudienceSeats();
+                        }
+
                         updateSyncStatus(mLastPlaybackStateSnapshot);
+                        if (mChatAdapter != null) mChatAdapter.setHost(mIsHost);
                     }
                 }
             }
@@ -565,8 +788,13 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 String type = snapshot.child("emoji_type").getValue(String.class);
                 Integer count = snapshot.child("count").getValue(Integer.class);
+                String senderUid = snapshot.child("sender_uid").getValue(String.class);
                 Long ts = snapshot.child("timestamp").getValue(Long.class);
-                if (ts != null && System.currentTimeMillis() - ts < 5000) spawnFloatingEmojis(type, count != null ? count : 0);
+                
+                if (ts != null && System.currentTimeMillis() - ts < 5000) {
+                    spawnFloatingEmojis(type, count != null ? count : 0);
+                    if (senderUid != null) playSeatReaction(senderUid, type);
+                }
             }
             @Override public void onChildChanged(@NonNull DataSnapshot s, @Nullable String p) {}
             @Override public void onChildRemoved(@NonNull DataSnapshot s) {}
@@ -620,6 +848,21 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
         };
         mCoDjsRef.addValueEventListener(mCoDjsListener);
 
+        // 9. Voice Active Listener (Glow effect on seats)
+        mVoiceActiveListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                java.util.Set<String> activeSpeakers = new java.util.HashSet<>();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Boolean active = child.getValue(Boolean.class);
+                    if (active != null && active) activeSpeakers.add(child.getKey());
+                }
+                updateSeatsGlow(activeSpeakers);
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
+        };
+        mVoiceActiveRef.addValueEventListener(mVoiceActiveListener);
+
         mChatInput.addTextChangedListener(new android.text.TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -631,6 +874,27 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
             }
             @Override public void afterTextChanged(android.text.Editable s) {}
         });
+    }
+
+    private void updateSeatsGlow(java.util.Set<String> speakers) {
+        // Update host seat
+        if (mCurrentHostId != null) {
+            boolean isSpeaking = speakers.contains(mCurrentHostId);
+            mHostAvatar.setStrokeWidth(isSpeaking ? 6 : 2);
+            mHostAvatar.setStrokeColor(android.content.res.ColorStateList.valueOf(isSpeaking ? 0xFFFFFFFF : 0xFFFF748D));
+        }
+        // Update Guest 2
+        if (mSeat2Uid != null) {
+            boolean isSpeaking = speakers.contains(mSeat2Uid);
+            mSeat2Avatar.setStrokeWidth(isSpeaking ? 4 : 0);
+            mSeat2Avatar.setStrokeColor(android.content.res.ColorStateList.valueOf(0xFFFFFFFF));
+        }
+        // Update Guest 3
+        if (mSeat3Uid != null) {
+            boolean isSpeaking = speakers.contains(mSeat3Uid);
+            mSeat3Avatar.setStrokeWidth(isSpeaking ? 4 : 0);
+            mSeat3Avatar.setStrokeColor(android.content.res.ColorStateList.valueOf(0xFFFFFFFF));
+        }
     }
 
     private void updateControlsVisibility() {
@@ -703,6 +967,7 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
         });
         updatePlaybackUi();
         mUpdateHandler.post(mUpdateProgressRunnable);
+        mRhythmHandler.postDelayed(mRhythmRunnable, 60000);
     }
 
     private void updatePlaybackUi() {
@@ -760,6 +1025,7 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
     @Override
     protected void onStop() {
         mUpdateHandler.removeCallbacks(mUpdateProgressRunnable);
+        mRhythmHandler.removeCallbacks(mRhythmRunnable);
         if (mMediaController != null) mMediaController.sendCustomCommand(new SessionCommand("LEAVE_ROOM", Bundle.EMPTY), Bundle.EMPTY);
         if (mMediaControllerFuture != null) MediaController.releaseFuture(mMediaControllerFuture);
         super.onStop();
@@ -767,6 +1033,7 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
 
     @Override
     protected void onDestroy() {
+        if (mLoveAnimationHelper != null) mLoveAnimationHelper.stop();
         if (mPresenceRef != null) mPresenceRef.removeEventListener(mPresenceListener);
         if (mRoomMetaRef != null) mRoomMetaRef.removeEventListener(mRoomMetaListener);
         if (mQueueRef != null) mQueueRef.removeEventListener(mQueueListener);
@@ -776,6 +1043,7 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
         if (mAuxRequestsRef != null) mAuxRequestsRef.removeEventListener(mAuxRequestsListener);
         if (mTypingRef != null) mTypingRef.removeEventListener(mTypingListener);
         if (mCoDjsRef != null) mCoDjsRef.removeEventListener(mCoDjsListener);
+        if (mVoiceActiveRef != null) mVoiceActiveRef.removeEventListener(mVoiceActiveListener);
         stopEqualizerAnimation();
         super.onDestroy();
     }
@@ -801,7 +1069,12 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
     }
 
     private void handleEmojiTap(String type) {
-        if ("fire".equals(type)) mLocalFireCount++; else if ("heart".equals(type)) mLocalHeartCount++; else if ("wow".equals(type)) mLocalWowCount++;
+        if ("fire".equals(type)) mLocalFireCount++; 
+        else if ("heart".equals(type)) mLocalHeartCount++; 
+        else if ("wow".equals(type)) mLocalWowCount++;
+        else if ("angry".equals(type)) mLocalAngryCount++;
+        else if ("favorite".equals(type)) mLocalFavoriteCount++;
+        else if ("wave".equals(type)) mLocalWaveCount++;
         mEmojiBatchHandler.removeCallbacks(mEmojiBatchRunnable); mEmojiBatchHandler.postDelayed(mEmojiBatchRunnable, 500); mIsEmojiTimerRunning = true;
     }
 
@@ -811,6 +1084,9 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
         if (mLocalFireCount > 0) { writeEmojiBatch("fire", mLocalFireCount, ts); mLocalFireCount = 0; }
         if (mLocalHeartCount > 0) { writeEmojiBatch("heart", mLocalHeartCount, ts); mLocalHeartCount = 0; }
         if (mLocalWowCount > 0) { writeEmojiBatch("wow", mLocalWowCount, ts); mLocalWowCount = 0; }
+        if (mLocalAngryCount > 0) { writeEmojiBatch("angry", mLocalAngryCount, ts); mLocalAngryCount = 0; }
+        if (mLocalFavoriteCount > 0) { writeEmojiBatch("favorite", mLocalFavoriteCount, ts); mLocalFavoriteCount = 0; }
+        if (mLocalWaveCount > 0) { writeEmojiBatch("wave", mLocalWaveCount, ts); mLocalWaveCount = 0; }
     }
 
     private void writeEmojiBatch(String type, int count, long timestamp) {
@@ -819,7 +1095,12 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
     }
 
     private void spawnFloatingEmojis(String type, int count) {
-        String symbol = "fire".equals(type) ? "\ud83d\udd25" : "heart".equals(type) ? "\u2764\ufe0f" : "\ud83d\ude2e";
+        String symbol = "fire".equals(type) ? "\ud83d\udd25" : 
+                       "heart".equals(type) ? "\u2764\ufe0f" : 
+                       "wave".equals(type) ? "\ud83d\udc4b" : 
+                       "angry".equals(type) ? "\ud83d\ude21" :
+                       "favorite".equals(type) ? "\u2b50" :
+                       "\ud83d\ude2e";
         int w = mEmojiOverlayContainer.getWidth(), h = mEmojiOverlayContainer.getHeight();
         if (w <= 0) { w = getResources().getDisplayMetrics().widthPixels; h = getResources().getDisplayMetrics().heightPixels; }
         java.util.Random rnd = new java.util.Random();
@@ -834,55 +1115,280 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
         }
     }
 
-    private void showMembersDialog() {
-        BottomSheetDialog bs = new BottomSheetDialog(this, R.style.FullScreenBottomSheetTheme);
-        View v = getLayoutInflater().inflate(R.layout.dialog_members, null); bs.setContentView(v);
-        RecyclerView r = v.findViewById(R.id.members_recycler); v.findViewById(R.id.close_members_btn).setOnClickListener(view -> bs.dismiss());
-        MemberAdapter adapter = new MemberAdapter(m -> {
-            if (m.getUid().equals(mUid)) Toast.makeText(this, "You are the DJ", Toast.LENGTH_SHORT).show();
-            else if (mIsHost) showMemberManagementDialog(m, bs);
-            else Toast.makeText(this, m.getDisplayName() + " is listening.", Toast.LENGTH_SHORT).show();
+    private void handleHostSeatClick() {
+        if (mIsHost) {
+            Toast.makeText(this, "You are already the DJ!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (mNeedsNewHost) {
+            takeHostSeat();
+        } else {
+            Toast.makeText(this, "The DJ seat is occupied", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void takeHostSeat() {
+        // Remove from any other audience seat first
+        removeFromAudienceSeats();
+
+        // Set self as host and clear needs_new_host flag
+        mRoomMetaRef.child(FirebasePaths.HOST_ID).setValue(mUid);
+        mRoomMetaRef.child(FirebasePaths.NEEDS_NEW_HOST).setValue(false);
+        
+        // Also ensure they are removed from Co-DJ list if they were there
+        mCoDjsRef.child(mUid).removeValue();
+        
+        Toast.makeText(this, "You have taken the DJ seat!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void removeFromAudienceSeats() {
+        int currentSeat = 0;
+        if (mUid.equals(mSeat2Uid)) currentSeat = 2;
+        else if (mUid.equals(mSeat3Uid)) currentSeat = 3;
+        else if (mUid.equals(mSeat4Uid)) currentSeat = 4;
+        else if (mUid.equals(mSeat5Uid)) currentSeat = 5;
+        else if (mUid.equals(mSeat6Uid)) currentSeat = 6;
+
+        if (currentSeat != 0) {
+            mSeatsRef.child(String.valueOf(currentSeat)).removeValue();
+        }
+    }
+
+    private void manageHostAndDjTransitions(DataSnapshot presenceSnapshot) {
+        if (!presenceSnapshot.exists()) return;
+
+        List<java.util.Map.Entry<String, Long>> members = new ArrayList<>();
+        for (DataSnapshot child : presenceSnapshot.getChildren()) {
+            Long timestamp = child.getValue(Long.class);
+            if (timestamp != null) {
+                members.add(new java.util.AbstractMap.SimpleEntry<>(child.getKey(), timestamp));
+            }
+        }
+
+        if (members.isEmpty()) return;
+
+        // Sort by timestamp (first joined first)
+        Collections.sort(members, (o1, o2) -> o1.getValue().compareTo(o2.getValue()));
+
+        String newHostId = members.get(0).getKey();
+        
+        // If I am the new host (oldest member present), take over
+        if (mUid.equals(newHostId)) {
+            mRoomMetaRef.child(FirebasePaths.HOST_ID).setValue(mUid);
+            mRoomMetaRef.child(FirebasePaths.NEEDS_NEW_HOST).setValue(false);
+            
+            // Auto-assign Co-DJ to the next person if exists
+            if (members.size() > 1) {
+                String nextPerson = members.get(1).getKey();
+                mCoDjsRef.child(nextPerson).setValue(true);
+            }
+        }
+    }
+
+    private void updateMemberCountText() {
+        String text = mActiveMembersCount + (mActiveMembersCount == 1 ? " Live" : " Live");
+        mMemberCountText.setText(text);
+        updateSeatsUI();
+    }
+
+    private void handleSeatClick(int seatIndex) {
+        String seatUid = null;
+        if (seatIndex == 2) seatUid = mSeat2Uid;
+        else if (seatIndex == 3) seatUid = mSeat3Uid;
+        else if (seatIndex == 4) seatUid = mSeat4Uid;
+        else if (seatIndex == 5) seatUid = mSeat5Uid;
+        else if (seatIndex == 6) seatUid = mSeat6Uid;
+
+        if (seatUid == null) {
+            // Seat is empty
+            if (mUid.equals(mCurrentHostId)) {
+                Toast.makeText(this, "The DJ cannot sit in audience seats", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Check if user is already sitting in another seat
+            int currentSeat = 0;
+            if (mUid.equals(mSeat2Uid)) currentSeat = 2;
+            else if (mUid.equals(mSeat3Uid)) currentSeat = 3;
+            else if (mUid.equals(mSeat4Uid)) currentSeat = 4;
+            else if (mUid.equals(mSeat5Uid)) currentSeat = 5;
+            else if (mUid.equals(mSeat6Uid)) currentSeat = 6;
+
+            if (currentSeat != 0) {
+                // Switching seats: vacate old, acquire new
+                mSeatsRef.child(String.valueOf(currentSeat)).removeValue();
+                sitInSeat(seatIndex);
+                Toast.makeText(this, "Switched to seat " + seatIndex, Toast.LENGTH_SHORT).show();
+            } else {
+                // First time sitting
+                sitInSeat(seatIndex);
+                Toast.makeText(this, "Took seat " + seatIndex, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // Seat is occupied
+            if (seatUid.equals(mUid)) {
+                // User is clicking their own seat - allow them to leave
+                mSeatsRef.child(String.valueOf(seatIndex)).removeValue();
+                Toast.makeText(this, "Left seat " + seatIndex, Toast.LENGTH_SHORT).show();
+            } else if (mIsHost) {
+                // Host can kick
+                new androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setTitle("Manage Seat")
+                        .setMessage("Kick this user from the seat?")
+                        .setPositiveButton("Kick", (d, w) -> mSeatsRef.child(String.valueOf(seatIndex)).removeValue())
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            } else {
+                // Click another member's seat → show profile
+                Intent intent = new Intent(this, ProfileActivity.class);
+                intent.putExtra("TARGET_UID", seatUid);
+                startActivity(intent);
+            }
+        }
+    }
+
+    private void sitInSeat(int index) {
+        mSeatsRef.child(String.valueOf(index)).setValue(mUid).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                mSeatsRef.child(String.valueOf(index)).onDisconnect().removeValue();
+            }
         });
-        r.setAdapter(adapter);
-        mPresenceRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<String> uids = new ArrayList<>(); for (DataSnapshot c : snapshot.getChildren()) if (c.getKey() != null) uids.add(c.getKey());
-                List<Member> list = new ArrayList<>(); int[] cnt = {0};
-                for (String uid : uids) {
-                    FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override public void onDataChange(@NonNull DataSnapshot userSnapshot) {
-                            String name = userSnapshot.child("display_name").getValue(String.class);
-                            String photo = userSnapshot.child("photo_url").getValue(String.class);
-                            list.add(new Member(uid, uid.equals(mUid) ? "You (" + name + ")" : (name != null ? name : "User_" + uid.substring(0,4)), photo, uid.equals(mCurrentHostId), mCoDjUids.contains(uid), mRequestingUids.contains(uid)));
-                            if (++cnt[0] == uids.size()) adapter.setMembers(list);
-                        }
-                        @Override public void onCancelled(@NonNull DatabaseError error) { if (++cnt[0] == uids.size()) adapter.setMembers(list); }
-                    });
+    }
+
+    private void playSeatReaction(String uid, String type) {
+        final LottieAnimationView targetLottie;
+        if (uid.equals(mCurrentHostId)) targetLottie = mHostLottie;
+        else if (uid.equals(mSeat2Uid)) targetLottie = mSeat2Lottie;
+        else if (uid.equals(mSeat3Uid)) targetLottie = mSeat3Lottie;
+        else if (uid.equals(mSeat4Uid)) targetLottie = mSeat4Lottie;
+        else if (uid.equals(mSeat5Uid)) targetLottie = mSeat5Lottie;
+        else if (uid.equals(mSeat6Uid)) targetLottie = mSeat6Lottie;
+        else targetLottie = null;
+
+        if (targetLottie != null) {
+            String animFile;
+            switch (type) {
+                case "fire": animFile = "Fire.json"; break;
+                case "heart": animFile = "Love is blind.json"; break;
+                case "wow": animFile = "WOW Emoji.json"; break;
+                case "wave": animFile = "Hand Wave Animation.json"; break;
+                case "angry": animFile = "Angry.json"; break;
+                case "favorite": animFile = "Add to favorites.json"; break;
+                default: animFile = "Fire.json"; break;
+            }
+
+            targetLottie.setAnimation(animFile);
+            targetLottie.setVisibility(View.VISIBLE);
+            targetLottie.playAnimation();
+            targetLottie.addAnimatorListener(new android.animation.AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(android.animation.Animator animation) {
+                    targetLottie.setVisibility(View.INVISIBLE);
+                }
+            });
+        }
+    }
+
+    private void updateSeatsUI() {
+        mSeatsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                mSeat2Uid = snapshot.child("2").getValue(String.class);
+                mSeat3Uid = snapshot.child("3").getValue(String.class);
+                mSeat4Uid = snapshot.child("4").getValue(String.class);
+                mSeat5Uid = snapshot.child("5").getValue(String.class);
+                mSeat6Uid = snapshot.child("6").getValue(String.class);
+
+                updateSeatView(mSeat2Uid, mSeat2Avatar, mSeat2Name);
+                updateSeatView(mSeat3Uid, mSeat3Avatar, mSeat3Name);
+                updateSeatView(mSeat4Uid, mSeat4Avatar, mSeat4Name);
+                updateSeatView(mSeat5Uid, mSeat5Avatar, mSeat5Name);
+                updateSeatView(mSeat6Uid, mSeat6Avatar, mSeat6Name);
+                
+                // If I am the host, make sure I am not in an audience seat
+                if (mIsHost) {
+                    int myCurrentSeat = 0;
+                    if (mUid.equals(mSeat2Uid)) myCurrentSeat = 2;
+                    else if (mUid.equals(mSeat3Uid)) myCurrentSeat = 3;
+                    else if (mUid.equals(mSeat4Uid)) myCurrentSeat = 4;
+                    else if (mUid.equals(mSeat5Uid)) myCurrentSeat = 5;
+                    else if (mUid.equals(mSeat6Uid)) myCurrentSeat = 6;
+                    
+                    if (myCurrentSeat != 0) {
+                        mSeatsRef.child(String.valueOf(myCurrentSeat)).removeValue();
+                    }
                 }
             }
             @Override public void onCancelled(@NonNull DatabaseError error) {}
         });
-        bs.show();
     }
 
-    private void showMemberManagementDialog(Member member, BottomSheetDialog parent) {
-        List<String> opts = new ArrayList<>(); opts.add("Give DJ / Host");
-        if (member.isCoDj()) opts.add("Remove Co-DJ"); else opts.add("Make Co-DJ");
-        if (member.hasRequestedAux()) opts.add("Dismiss Request"); opts.add("Cancel");
-        final CharSequence[] items = opts.toArray(new CharSequence[0]);
-        new androidx.appcompat.app.AlertDialog.Builder(this).setTitle("Manage " + member.getDisplayName()).setItems(items, (dialog, which) -> {
-            String opt = items[which].toString();
-            if (opt.equals("Give DJ / Host")) { mRoomMetaRef.child(FirebasePaths.HOST_ID).setValue(member.getUid()); mAuxRequestsRef.child(member.getUid()).removeValue(); mCoDjsRef.child(member.getUid()).removeValue(); parent.dismiss(); }
-            else if (opt.equals("Make Co-DJ")) { mCoDjsRef.child(member.getUid()).setValue(true); mAuxRequestsRef.child(member.getUid()).removeValue(); parent.dismiss(); }
-            else if (opt.equals("Remove Co-DJ")) { mCoDjsRef.child(member.getUid()).removeValue(); parent.dismiss(); }
-            else if (opt.equals("Dismiss Request")) { mAuxRequestsRef.child(member.getUid()).removeValue(); parent.dismiss(); }
-        }).show();
+    private void updateSeatView(String uid, ImageView avatar, TextView name) {
+        if (uid == null) {
+            avatar.setImageResource(R.drawable.ic_user_placeholder);
+            avatar.setAlpha(0.5f);
+            name.setText("Empty");
+            return;
+        }
+        avatar.setAlpha(1.0f);
+        FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(uid)
+            .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String n = snapshot.child("display_name").getValue(String.class);
+                    String p = snapshot.child("photo_url").getValue(String.class);
+                    name.setText(n != null ? n : "User");
+                    Glide.with(RoomActivity.this).load(p).placeholder(R.drawable.ic_user_placeholder).circleCrop().into(avatar);
+                }
+                @Override public void onCancelled(@NonNull DatabaseError error) {}
+            });
     }
 
-    private void updateMemberCountText() {
-        String text = mActiveMembersCount + (mActiveMembersCount == 1 ? " Member" : " Members");
-        if (mIsHost && mAuxRequestsCount > 0) text += " (" + mAuxRequestsCount + " \ud83d\ude4b)";
-        mMemberCountText.setText(text);
+    private void showDjManagementDialog() {
+        FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(mCurrentHostId).child("display_name")
+            .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String name = snapshot.getValue(String.class);
+                    new com.google.android.material.dialog.MaterialAlertDialogBuilder(RoomActivity.this, R.style.MelodifyDialogTheme)
+                        .setTitle("DJ Status")
+                        .setMessage("Current DJ: " + (name != null ? name : "Unknown") + "\n\nWould you like to request the DJ controls?")
+                        .setPositiveButton("Request DJ", (d, w) -> sendDjRequest())
+                        .setNegativeButton("Cancel", null)
+                        .show();
+                }
+                @Override public void onCancelled(@NonNull DatabaseError error) {}
+            });
+    }
+
+    private void showCoDjManagementDialog() {
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this, R.style.MelodifyDialogTheme)
+            .setTitle("Co-DJ Status")
+            .setMessage("Current Co-DJs are active in the room.\n\nWould you like to request to be a Co-DJ?")
+            .setPositiveButton("Request Co-DJ", (d, w) -> sendCoDjRequest())
+            .setNegativeButton("Cancel", null)
+            .show();
+    }
+
+    private void sendDjRequest() {
+        if (mIsHost) {
+            Toast.makeText(this, "You are already the DJ!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ChatMessage msg = new ChatMessage(mUid, mDisplayName, mPhotoUrl, "✋ I am requesting DJ status!", System.currentTimeMillis(), false, null, null, "dj", mUid);
+        mChatRef.push().setValue(msg);
+        Toast.makeText(this, "DJ request sent to chat!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void sendCoDjRequest() {
+        if (mIsHost || mIsCoDj) {
+            Toast.makeText(this, "You already have DJ permissions!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ChatMessage msg = new ChatMessage(mUid, mDisplayName, mPhotoUrl, "✋ I am requesting to be a Co-DJ!", System.currentTimeMillis(), false, null, null, "codj", mUid);
+        mChatRef.push().setValue(msg);
+        Toast.makeText(this, "Co-DJ request sent to chat!", Toast.LENGTH_SHORT).show();
     }
 
     private String formatTime(long ms) {
