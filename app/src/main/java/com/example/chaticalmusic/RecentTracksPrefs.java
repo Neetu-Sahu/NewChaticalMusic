@@ -18,6 +18,11 @@ public class RecentTracksPrefs {
         this.mContext = context.getApplicationContext();
     }
 
+    public void addTrack(JamendoTrack track) {
+        if (track == null) return;
+        saveTrack(track.getTrackTitle(), track.getTrackArtist(), track.getStreamUrl(), track.getAlbumArtUrl());
+    }
+
     public void saveTrack(String trackTitle, String artistName, String streamUrl, String albumArtUrl) {
         SharedPreferences prefs = mContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         Gson gson = new Gson();
