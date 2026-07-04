@@ -94,7 +94,19 @@
                 android:textColor="@color/melodify_pink"
                 android:textSize="26sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/profile_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Online"
+                android:textColor="@color/melodify_pink"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/profile_bio"
@@ -109,132 +121,104 @@
                 android:clickable="true"
                 android:focusable="true" />
 
-            <!-- Soulmate Match Card -->
+            <!-- Followers / Following Row -->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/glass_card_bg"
-                android:backgroundTint="@color/melodify_card"
-                android:orientation="vertical"
-                android:padding="20dp"
-                android:layout_marginTop="30dp">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="SOULMATE MATCH"
-                        android:textColor="@color/melodify_text_secondary"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.1" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:text="♡ _ ▤"
-                        android:textColor="@color/melodify_text_secondary" />
-                </RelativeLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="98%"
-                        android:textColor="@color/white"
-                        android:textSize="40sp"
-                        android:textStyle="bold" />
-
-                    <ProgressBar
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="0dp"
-                        android:layout_height="8dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="16dp"
-                        android:progress="98"
-                        android:progressTint="@color/melodify_pink"
-                        android:progressBackgroundTint="#33FFFFFF" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Highest compatibility found with Maya J. in Jazz &amp; Chillhop."
-                    android:textColor="@color/melodify_text_secondary"
-                    android:textSize="13sp"
-                    android:layout_marginTop="12dp" />
-            </LinearLayout>
-
-            <!-- Secondary Stats Row -->
-            <LinearLayout
+                android:id="@+id/follow_stats_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="16dp">
+                android:gravity="center"
+                android:layout_marginTop="20dp">
 
                 <LinearLayout
+                    android:id="@+id/followers_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <TextView
+                        android:id="@+id/followers_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Followers"
+                        android:textColor="@color/melodify_text_secondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="24dp"
+                    android:background="#33FFFFFF"
+                    android:layout_marginHorizontal="20dp" />
+
+                <LinearLayout
+                    android:id="@+id/following_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <TextView
+                        android:id="@+id/following_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Following"
+                        android:textColor="@color/melodify_text_secondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Action Buttons for Others -->
+            <LinearLayout
+                android:id="@+id/profile_actions_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/btn_follow"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@drawable/glass_card_bg"
-                    android:backgroundTint="@color/melodify_card"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:layout_marginEnd="8dp">
+                    android:text="Follow"
+                    android:backgroundTint="@color/melodify_pink"
+                    android:textColor="@color/melodify_background"
+                    android:layout_marginEnd="8dp"
+                    app:cornerRadius="12dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📊 RHYTHM SCORE"
-                        android:textColor="@color/melodify_text_secondary"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:id="@+id/rhythm_score_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="1,240"
-                        android:textColor="@color/white"
-                        android:textSize="22sp"
-                        android:textStyle="bold"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
-
-                <LinearLayout
+                <Button
+                    android:id="@+id/btn_message"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@drawable/glass_card_bg"
+                    android:text="Message"
                     android:backgroundTint="@color/melodify_card"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:layout_marginStart="8dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🕒 SHARED HOURS"
-                        android:textColor="@color/melodify_text_secondary"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:id="@+id/shared_hours_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="84h"
-                        android:textColor="@color/white"
-                        android:textSize="22sp"
-                        android:textStyle="bold"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
+                    android:textColor="@color/white"
+                    android:layout_marginStart="8dp"
+                    app:cornerRadius="12dp"
+                    app:strokeColor="@color/melodify_pink"
+                    app:strokeWidth="1dp" />
             </LinearLayout>
 
             <!-- Recent Rooms Section -->
@@ -243,110 +227,22 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp">
                 <TextView
+                    android:id="@+id/recent_rooms_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Recent Rooms"
                     android:textColor="@color/melodify_pink"
                     android:textSize="20sp"
                     android:textStyle="bold" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:text="VIEW ALL"
-                    android:textColor="@color/melodify_text_secondary"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
             </RelativeLayout>
 
-            <!-- Recent Room Item 1 -->
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recent_rooms_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/glass_card_bg"
-                android:backgroundTint="@color/melodify_card"
-                android:gravity="center_vertical"
-                android:padding="12dp"
-                android:layout_marginTop="12dp">
+                android:layout_marginTop="12dp"
+                tools:listitem="@layout/item_public_room" />
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_music_placeholder"
-                    app:shapeAppearanceOverlay="@style/RoundedCorner6dp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="12dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Rainy Night Jazz"
-                        android:textColor="@color/white"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="With 12 others • 24m ago"
-                        android:textColor="@color/melodify_text_secondary"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@android:drawable/ic_media_play"
-                    app:tint="@color/melodify_text_secondary" />
-            </LinearLayout>
-
-            <!-- Recent Room Item 2 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/glass_card_bg"
-                android:backgroundTint="@color/melodify_card"
-                android:gravity="center_vertical"
-                android:padding="12dp"
-                android:layout_marginTop="12dp">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_music_placeholder"
-                    app:shapeAppearanceOverlay="@style/RoundedCorner6dp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="12dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Heart Beats Only"
-                        android:textColor="@color/white"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="With Maya J. • 2h ago"
-                        android:textColor="@color/melodify_text_secondary"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@android:drawable/ic_media_play"
-                    app:tint="@color/melodify_text_secondary" />
-            </LinearLayout>
 
             <!-- Preferences Section -->
             <TextView
@@ -553,14 +449,14 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/nav_rooms"
+                android:id="@+id/nav_dm"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_view" app:tint="@color/melodify_text_secondary" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Rooms" android:textColor="@color/melodify_text_secondary" android:textSize="10sp" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/stat_notify_chat" app:tint="@color/melodify_text_secondary" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="DM" android:textColor="@color/melodify_text_secondary" android:textSize="10sp" />
             </LinearLayout>
 
             <LinearLayout
