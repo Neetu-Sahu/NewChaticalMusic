@@ -1,8 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.CHATICALMUSIC" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowBackground">@color/melodify_background</item>
+        <item name="colorPrimary">@color/melodify_pink</item>
+        <item name="android:statusBarColor">@color/melodify_background</item>
     </style>
 
     <style name="Theme.CHATICALMUSIC" parent="Base.Theme.CHATICALMUSIC" />
@@ -22,6 +23,11 @@
         <item name="cornerSize">16dp</item>
     </style>
 
+    <style name="CircleAppearance" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
     <style name="FullScreenBottomSheetTheme" parent="Theme.Material3.Dark.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/FullScreenBottomSheetStyle</item>
     </style>
@@ -29,5 +35,46 @@
     <style name="FullScreenBottomSheetStyle" parent="Widget.Material3.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
         <item name="backgroundTint">@android:color/transparent</item>
+    </style>
+
+    <style name="MoodChip">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:paddingRight">20dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:background">@drawable/edit_text_bg</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="NavItem">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="NavIcon">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:tint">@color/melodify_text_secondary</item>
+    </style>
+
+    <style name="NavText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/melodify_text_secondary</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:layout_marginTop">2dp</item>
+    </style>
+    <style name="MelodifyDialogTheme" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorSurface">@color/melodify_card</item>
+        <item name="colorPrimary">@color/melodify_pink</item>
+        <item name="colorOnSurface">@color/white</item>
     </style>
 </resources>
