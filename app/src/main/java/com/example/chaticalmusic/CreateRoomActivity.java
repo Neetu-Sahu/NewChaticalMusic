@@ -5,15 +5,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.example.chaticalmusic.model.PlaybackState;
 import com.example.chaticalmusic.model.Room;
@@ -36,18 +41,39 @@ public class CreateRoomActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_room);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.love_animation_container), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(0, systemBars.top, 0, 0); // Background can start from top
+            return insets;
+        });
+        
+        // Find back button container or first visible item
+        ImageButton btnBack = findViewById(R.id.btn_back);
+        if (btnBack != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(btnBack, (v, insets) -> {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams lp = (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) v.getLayoutParams();
+                lp.topMargin = systemBars.top + (int)(16 * getResources().getDisplayMetrics().density);
+                v.setLayoutParams(lp);
+                return insets;
+            });
+        }
+
 
         mRoomNameInput = findViewById(R.id.room_name_input);
         mPrivateRoomSwitch = findViewById(R.id.private_room_switch);
         mBtnCreate = findViewById(R.id.btn_create_final);
         mProgressBar = findViewById(R.id.progress_bar);
-        ImageButton btnBack = findViewById(R.id.btn_back);
 
         mLoveAnimationHelper = new LoveAnimationHelper(findViewById(R.id.love_animation_container));
         mLoveAnimationHelper.start();
 
-        btnBack.setOnClickListener(v -> finish());
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
 
         mBtnCreate.setOnClickListener(v -> {
             String roomName = mRoomNameInput.getText().toString().trim();
