@@ -5,17 +5,26 @@
     android:id="@+id/search_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/dark_gradient_bg"
+    android:background="@drawable/heartbeat_animated_bg"
     tools:context=".SearchActivity">
+
+    <!-- Background Animation Container -->
+    <FrameLayout
+        android:id="@+id/love_animation_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.3"
+        android:clickable="false"
+        android:focusable="false" />
 
     <!-- Search Toolbar -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/search_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:title="Search music"
-        app:titleTextColor="#FFFFFF"
-        app:navigationIconTint="#FFFFFF"
+        app:title="Search Music"
+        app:titleTextColor="@color/white"
+        app:navigationIconTint="@color/white"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Search Bar Layout -->
@@ -25,27 +34,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        app:boxStrokeColor="#1DB954"
+        android:hint="Search for music..."
+        app:boxStrokeColor="@color/melodify_pink"
         app:boxStrokeWidth="1.5dp"
         app:boxStrokeWidthFocused="2dp"
-        app:hintTextColor="#1DB954"
+        app:hintTextColor="@color/melodify_pink"
         app:boxCornerRadiusTopStart="24dp"
         app:boxCornerRadiusTopEnd="24dp"
         app:boxCornerRadiusBottomStart="24dp"
         app:boxCornerRadiusBottomEnd="24dp"
         app:startIconDrawable="@drawable/ic_search"
-        app:startIconTint="#FFFFFF"
+        app:startIconTint="@color/white"
         app:endIconMode="clear_text"
-        app:endIconTint="#FFFFFF"
+        app:endIconTint="@color/white"
         app:layout_constraintTop_toBottomOf="@id/search_toolbar">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/search_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Artists, tracks, moods..."
-            android:textColorHint="#55FFFFFF"
-            android:textColor="#FFFFFF"
+            android:textColorHint="@color/melodify_text_secondary"
+            android:textColor="@color/white"
             android:inputType="textCapSentences"
             android:maxLines="1"
             android:imeOptions="actionSearch"
@@ -62,12 +71,11 @@
         app:layout_constraintTop_toBottomOf="@id/search_bar_layout"
         app:layout_constraintBottom_toTopOf="@id/mini_player_bar">
 
-        <!-- Mood chips (always show inside pre-search layout) -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Browse by mood"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
@@ -91,18 +99,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Lo-fi"
-                    android:textColor="#FFFFFF"
-                    android:checkable="true"
-                    app:chipBackgroundColor="@color/chip_bg_selector"
-                    app:chipStrokeWidth="0dp"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_focus"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Focus"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/white"
                     android:checkable="true"
                     app:chipBackgroundColor="@color/chip_bg_selector"
                     app:chipStrokeWidth="0dp"/>
@@ -113,7 +110,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Chill"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/white"
                     android:checkable="true"
                     app:chipBackgroundColor="@color/chip_bg_selector"
                     app:chipStrokeWidth="0dp"/>
@@ -124,7 +121,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Hype"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/white"
+                    android:checkable="true"
+                    app:chipBackgroundColor="@color/chip_bg_selector"
+                    app:chipStrokeWidth="0dp"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_focus"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Focus"
+                    android:textColor="@color/white"
                     android:checkable="true"
                     app:chipBackgroundColor="@color/chip_bg_selector"
                     app:chipStrokeWidth="0dp"/>
@@ -135,7 +143,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Sleep"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/white"
                     android:checkable="true"
                     app:chipBackgroundColor="@color/chip_bg_selector"
                     app:chipStrokeWidth="0dp"/>
@@ -146,7 +154,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Happy"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/white"
                     android:checkable="true"
                     app:chipBackgroundColor="@color/chip_bg_selector"
                     app:chipStrokeWidth="0dp"/>
@@ -154,13 +162,12 @@
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
 
-        <!-- Recently Played Section -->
         <TextView
             android:id="@+id/recent_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Recently played"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
@@ -177,7 +184,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Nothing played yet — search above"
-            android:textColor="#88FFFFFF"
+            android:textColor="@color/melodify_text_secondary"
             android:textSize="14sp"
             android:gravity="center"
             android:layout_marginTop="24dp"
@@ -196,7 +203,7 @@
         app:layout_constraintBottom_toTopOf="@id/mini_player_bar"
         tools:listitem="@layout/item_track"/>
 
-    <!-- Empty state results text (STATE C) -->
+    <!-- Empty state results text -->
     <TextView
         android:id="@+id/search_empty_text"
         android:layout_width="match_parent"
@@ -204,13 +211,13 @@
         android:gravity="center"
         android:padding="24dp"
         android:text="No results found"
-        android:textColor="#88FFFFFF"
+        android:textColor="@color/melodify_text_secondary"
         android:textSize="16sp"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/search_bar_layout"
         app:layout_constraintBottom_toTopOf="@id/mini_player_bar"/>
 
-    <!-- Connection error state layout (STATE D) -->
+    <!-- Connection error state layout -->
     <LinearLayout
         android:id="@+id/search_error_layout"
         android:layout_width="wrap_content"
@@ -230,7 +237,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Connection error — tap to retry"
-            android:textColor="#FF4D4D"
+            android:textColor="@color/melodify_pink"
             android:textSize="16sp"
             android:layout_marginBottom="12dp"/>
 
@@ -238,9 +245,9 @@
             android:id="@+id/retry_search_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#1DB954"
+            android:backgroundTint="@color/melodify_pink"
             android:text="Retry"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/melodify_background"
             app:cornerRadius="20dp"/>
     </LinearLayout>
 
@@ -251,7 +258,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:background="#111111"
+        android:background="@color/melodify_card"
         android:elevation="8dp"
         android:paddingHorizontal="10dp"
         android:paddingVertical="8dp"
@@ -260,17 +267,15 @@
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Album art -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/mini_art"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:scaleType="centerCrop"
-            android:background="#2A2A2A"
+            android:background="@color/melodify_background"
             app:shapeAppearanceOverlay="@style/RoundedCorner4dp"
             tools:srcCompat="@drawable/ic_music_placeholder" />
 
-        <!-- Title & Artist -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -282,7 +287,7 @@
                 android:id="@+id/mini_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 android:maxLines="1"
@@ -293,25 +298,23 @@
                 android:id="@+id/mini_artist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#888888"
+                android:textColor="@color/melodify_text_secondary"
                 android:textSize="11sp"
                 android:maxLines="1"
                 android:ellipsize="end"
                 tools:text="Artist Name" />
         </LinearLayout>
 
-        <!-- Play / Pause -->
         <ImageButton
             android:id="@+id/mini_play_pause"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_pause"
+            android:src="@drawable/ic_play_arrow"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="Play or pause"
-            app:tint="#FFFFFF"
+            app:tint="@color/melodify_pink"
             android:layout_marginEnd="4dp" />
 
-        <!-- Skip next -->
         <ImageButton
             android:id="@+id/mini_skip"
             android:layout_width="36dp"
@@ -319,7 +322,7 @@
             android:src="@drawable/ic_skip_next"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="Skip to next"
-            app:tint="#FFFFFF" />
+            app:tint="@color/white" />
 
     </LinearLayout>
 
@@ -328,7 +331,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:indeterminateTint="#1DB954"
+        android:indeterminateTint="@color/melodify_pink"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
