@@ -1,81 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="6dp"
-    android:layout_marginHorizontal="2dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="0dp"
-    app:cardBackgroundColor="#1AFFFFFF">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardBackgroundColor="@color/melodify_card"
+    app:cardElevation="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:padding="12dp"
         android:gravity="center_vertical">
 
-        <!-- Room Icon or Music Symbol -->
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/room_icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/glass_card_bg"
-            android:backgroundTint="#33FFFFFF"
-            android:padding="8dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/RoundedCorner16dp"
             android:src="@drawable/ic_music_placeholder"
-            android:layout_marginRight="12dp"
-            app:tint="#1DB954" />
+            android:background="#2C2C2E" />
 
-        <!-- Info Column -->
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="16dp">
 
             <TextView
                 android:id="@+id/public_room_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
+                android:text="Room Name"
+                android:textColor="@color/white"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                android:text="Rock Jam Room" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/public_room_song"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#8E8E93"
+                android:text="Now Playing: None"
+                android:textColor="@color/melodify_text_secondary"
                 android:textSize="13sp"
                 android:layout_marginTop="2dp"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:text="Now Playing: None" />
-        </LinearLayout>
-
-        <!-- Presence/Members Badge -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/glass_card_bg"
-            android:backgroundTint="#2C2C2E"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="6dp">
+                android:maxLines="1"
+                android:ellipsize="end" />
 
             <TextView
                 android:id="@+id/public_room_members"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#1DB954"
+                android:text="👤 0"
+                android:textColor="@color/melodify_pink"
                 android:textSize="12sp"
-                android:textStyle="bold"
-                android:text="👤 1" />
+                android:layout_marginTop="4dp" />
         </LinearLayout>
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@android:drawable/ic_media_play"
+            app:tint="@color/melodify_text_secondary" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
