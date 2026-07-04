@@ -1,67 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="12dp"
-    android:gravity="center_vertical">
+    android:padding="12dp">
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/request_avatar"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        app:shapeAppearanceOverlay="@style/RoundedCorner16dp"
-        android:src="@drawable/ic_user_placeholder"
-        android:scaleType="centerCrop" />
+        android:id="@+id/requester_image"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/CircleAppearance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:src="@drawable/ic_user_placeholder" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/requester_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:layout_marginStart="16dp">
+        android:layout_marginStart="12dp"
+        android:text="Display Name"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/requester_username"
+        app:layout_constraintEnd_toStartOf="@id/actions_layout"
+        app:layout_constraintStart_toEndOf="@id/requester_image"
+        app:layout_constraintTop_toTopOf="@id/requester_image"
+        app:layout_constraintVertical_chainStyle="packed" />
 
-        <TextView
-            android:id="@+id/request_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="User Name"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sent you a follow request"
-            android:textColor="@color/melodify_text_secondary"
-            android:textSize="12sp" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/requester_username"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="username"
+        android:textColor="@color/melodify_text_secondary"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/requester_image"
+        app:layout_constraintEnd_toStartOf="@id/actions_layout"
+        app:layout_constraintStart_toEndOf="@id/requester_image"
+        app:layout_constraintTop_toBottomOf="@id/requester_name" />
 
     <LinearLayout
+        android:id="@+id/actions_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/btn_accept_request"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/glass_card_bg"
-            android:backgroundTint="@color/melodify_accent_green"
-            android:src="@android:drawable/ic_input_add"
-            app:tint="@color/melodify_background" />
+        <Button
+            android:id="@+id/btn_accept"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Accept"
+            android:textSize="12sp"
+            android:layout_marginEnd="8dp" />
 
-        <ImageButton
-            android:id="@+id/btn_decline_request"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/glass_card_bg"
-            android:backgroundTint="@color/melodify_pink"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            app:tint="@color/melodify_background" />
+        <Button
+            android:id="@+id/btn_decline"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Decline"
+            android:textSize="12sp"
+            app:backgroundTint="@color/melodify_card"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/btn_follow_back"
+            style="@style/Widget.Material3.Button.FilledButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Follow Back"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:backgroundTint="@color/melodify_pink"
+            android:textColor="@color/white" />
     </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
