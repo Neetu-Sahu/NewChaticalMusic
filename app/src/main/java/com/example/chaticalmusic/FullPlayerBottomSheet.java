@@ -52,6 +52,7 @@ public class FullPlayerBottomSheet extends BottomSheetDialogFragment {
     private Runnable seekRunnable;
     private boolean isUserSeeking = false;
     private Player.Listener controllerListener;
+    private LoveAnimationHelper loveAnimationHelper;
 
     public static FullPlayerBottomSheet newInstance() {
         return new FullPlayerBottomSheet();
@@ -80,6 +81,9 @@ public class FullPlayerBottomSheet extends BottomSheetDialogFragment {
         fullPlayPause = view.findViewById(R.id.fullPlayPause);
         fullSkipPrev = view.findViewById(R.id.fullSkipPrev);
         fullSkipNext = view.findViewById(R.id.fullSkipNext);
+
+        loveAnimationHelper = new LoveAnimationHelper(view.findViewById(R.id.love_animation_container));
+        loveAnimationHelper.start();
 
         // Seekbar live update (Handler loop)
         seekRunnable = new Runnable() {
@@ -249,6 +253,7 @@ public class FullPlayerBottomSheet extends BottomSheetDialogFragment {
 
     @Override
     public void onStop() {
+        if (loveAnimationHelper != null) loveAnimationHelper.stop();
         if (mediaController != null && controllerListener != null) {
             mediaController.removeListener(controllerListener);
         }
