@@ -36,4 +36,20 @@ public final class FirebasePaths {
     public static final String USERS = "users";
     public static final String TYPING = "typing";
     public static final String CO_DJS = "co_djs";
+    public static final String VOICE_ACTIVE = "voice_active";
+    public static final String DIRECT_MESSAGES = "direct_messages";
+    public static final String CONVERSATIONS = "conversations";
+    public static final String MESSAGES = "messages";
+    public static final String STATUS = "status";
+    public static final String LAST_MESSAGE = "last_message";
+    public static final String UNREAD_COUNT = "unread_count";
+    public static final String LAST_ACTIVE = "last_active";
+    public static final String ONLINE = "online";
+    public static final String FOLLOW_REQUESTS = "follow_requests";
+    public static final String FOLLOWERS = "followers";
+    public static final String FOLLOWING = "following";
+    public static final String NOTIFICATIONS = "notifications";
+    public static final String BLOCKED = "blocked";
+    public static final String MUTED_UNTIL = "muted_until";
+    public static final String WALLPAPER = "wallpaper";
 }
