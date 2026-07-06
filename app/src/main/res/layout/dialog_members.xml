@@ -5,21 +5,22 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/glass_card_bg"
-    android:padding="16dp">
+    android:backgroundTint="@color/melodify_background"
+    android:padding="24dp">
 
     <View
         android:layout_width="40dp"
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/drag_handle_bg"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="20dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Active Members"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="12dp" />
 
@@ -33,11 +34,12 @@
     <Button
         android:id="@+id/close_members_btn"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:text="Close"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#2C2C2E"
-        android:layout_marginTop="16dp"
-        app:cornerRadius="24dp" />
+        android:textColor="@color/melodify_background"
+        android:textStyle="bold"
+        android:backgroundTint="@color/melodify_pink"
+        android:layout_marginTop="24dp"
+        app:cornerRadius="28dp" />
 
 </LinearLayout>
