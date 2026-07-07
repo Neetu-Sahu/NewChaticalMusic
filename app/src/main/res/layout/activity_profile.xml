@@ -121,6 +121,39 @@
                 android:clickable="true"
                 android:focusable="true" />
 
+            <!-- Private Account Message -->
+            <LinearLayout
+                android:id="@+id/private_account_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginTop="40dp"
+                android:visibility="gone">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔒"
+                    android:textSize="48sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="This Account is Private"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Follow this account to see their followers, following and rooms."
+                    android:textColor="@color/melodify_text_secondary"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:layout_marginTop="4dp"
+                    android:paddingHorizontal="32dp" />
+            </LinearLayout>
+
             <!-- Followers / Following Row -->
             <LinearLayout
                 android:id="@+id/follow_stats_row"
@@ -244,104 +277,116 @@
                 tools:listitem="@layout/item_public_room" />
 
 
-            <!-- Preferences Section -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:text="Preferences"
-                android:textColor="@color/melodify_pink"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
             <LinearLayout
+                android:id="@+id/preferences_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/glass_card_bg"
-                android:backgroundTint="@color/melodify_card"
-                android:orientation="vertical"
-                android:layout_marginTop="12dp">
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:text="Preferences"
+                    android:textColor="@color/melodify_pink"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:padding="16dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🛡️"
-                        android:textSize="16sp" />
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:text="Profile Visibility"
-                        android:textColor="@color/white"
-                        android:textSize="15sp" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Romantic Mode >"
-                        android:textColor="@color/melodify_text_secondary"
-                        android:textSize="12sp" />
-                </LinearLayout>
+                    android:background="@drawable/glass_card_bg"
+                    android:backgroundTint="@color/melodify_card"
+                    android:orientation="vertical"
+                    android:layout_marginTop="12dp">
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#1AFFFFFF" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:padding="16dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🔔"
-                        android:textSize="16sp" />
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:text="Vibration &amp; Haptics"
-                        android:textColor="@color/white"
-                        android:textSize="15sp" />
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true"
-                        app:thumbTint="@color/melodify_pink"
-                        app:trackTint="#33FFFFFF" />
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🛡️"
+                            android:textSize="16sp" />
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#1AFFFFFF" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:text="Private Account"
+                            android:textColor="@color/white"
+                            android:textSize="15sp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:padding="16dp">
-                    <TextView
-                        android:layout_width="wrap_content"
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/switch_private_profile"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:thumbTint="@color/melodify_pink"
+                            app:trackTint="#33FFFFFF" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#1AFFFFFF" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="♡"
-                        android:textColor="@color/melodify_pink"
-                        android:textSize="16sp" />
-                    <TextView
-                        android:layout_width="0dp"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🔔"
+                            android:textSize="16sp" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:text="Vibration &amp; Haptics"
+                            android:textColor="@color/white"
+                            android:textSize="15sp" />
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            app:thumbTint="@color/melodify_pink"
+                            app:trackTint="#33FFFFFF" />
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#1AFFFFFF" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:text="Music Language"
-                        android:textColor="@color/white"
-                        android:textSize="15sp" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=">"
-                        android:textColor="@color/melodify_text_secondary" />
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="♡"
+                            android:textColor="@color/melodify_pink"
+                            android:textSize="16sp" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:text="Music Language"
+                            android:textColor="@color/white"
+                            android:textSize="15sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=">"
+                            android:textColor="@color/melodify_text_secondary" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
