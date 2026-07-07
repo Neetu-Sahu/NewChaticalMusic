@@ -41,9 +41,15 @@ public class ChaticalApplication extends Application {
     private void updateStatus(boolean online) {
         String uid = FirebaseAuth.getInstance().getUid();
         if (uid != null) {
-            FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(uid).child(FirebasePaths.ONLINE).setValue(online);
+            com.google.firebase.database.DatabaseReference statusRef = FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(uid).child(FirebasePaths.ONLINE);
+            com.google.firebase.database.DatabaseReference lastActiveRef = FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(uid).child(FirebasePaths.LAST_ACTIVE);
+            
+            statusRef.setValue(online);
             if (!online) {
-                FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(uid).child(FirebasePaths.LAST_ACTIVE).setValue(ServerValue.TIMESTAMP);
+                lastActiveRef.setValue(ServerValue.TIMESTAMP);
+            } else {
+                statusRef.onDisconnect().setValue(false);
+                lastActiveRef.onDisconnect().setValue(ServerValue.TIMESTAMP);
             }
         }
     }
