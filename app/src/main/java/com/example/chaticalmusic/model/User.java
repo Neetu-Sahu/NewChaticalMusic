@@ -8,6 +8,7 @@ public class User {
     private String bio;
     private int followers_count;
     private int following_count;
+    private boolean is_private;
 
     public User() {}
 
@@ -38,4 +39,7 @@ public class User {
 
     public int getFollowing_count() { return following_count; }
     public void setFollowing_count(int following_count) { this.following_count = following_count; }
+
+    public boolean isIs_private() { return is_private; }
+    public void setIs_private(boolean is_private) { this.is_private = is_private; }
 }
