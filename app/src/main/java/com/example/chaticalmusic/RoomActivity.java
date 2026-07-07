@@ -56,6 +56,7 @@ import com.google.firebase.database.MutableData;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -756,7 +757,7 @@ public class RoomActivity extends AppCompatActivity implements QueueAdapter.OnVo
                         tracks.add(track);
                     }
                 }
-                java.util.Collections.sort(tracks, (o1, o2) -> Long.compare(o1.getAdded_at(), o2.getAdded_at()));
+                Collections.sort(tracks, (o1, o2) -> Long.compare(o1.getAdded_at(), o2.getAdded_at()));
                 mQueueEmptyBanner.setVisibility(tracks.isEmpty() ? View.VISIBLE : View.GONE);
                 mQueueAdapter.setTracks(tracks);
             }
