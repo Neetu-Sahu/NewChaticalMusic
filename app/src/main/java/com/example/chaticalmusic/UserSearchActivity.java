@@ -172,10 +172,20 @@ public class UserSearchActivity extends AppCompatActivity {
                                     if (followingSnap.exists()) {
                                         Toast.makeText(UserSearchActivity.this, "Already following", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        // Send request
-                                        requestRef.setValue(com.google.firebase.database.ServerValue.TIMESTAMP);
-                                        NotificationHelper.sendNotification(UserSearchActivity.this, targetUser.getUid(), "follow_request");
-                                        Toast.makeText(UserSearchActivity.this, "Follow request sent!", Toast.LENGTH_SHORT).show();
+                                        if (targetUser.isIs_private()) {
+                                            // Send request
+                                            requestRef.setValue(com.google.firebase.database.ServerValue.TIMESTAMP);
+                                            NotificationHelper.sendNotification(UserSearchActivity.this, targetUser.getUid(), "follow_request");
+                                            Toast.makeText(UserSearchActivity.this, "Follow request sent!", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            // Immediate follow
+                                            DatabaseReference myFollowingRef = FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(myUid).child(FirebasePaths.FOLLOWING).child(targetUser.getUid());
+                                            DatabaseReference targetFollowersRef = FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(targetUser.getUid()).child(FirebasePaths.FOLLOWERS).child(myUid);
+                                            myFollowingRef.setValue(com.google.firebase.database.ServerValue.TIMESTAMP);
+                                            targetFollowersRef.setValue(com.google.firebase.database.ServerValue.TIMESTAMP);
+                                            NotificationHelper.sendNotification(UserSearchActivity.this, targetUser.getUid(), "new_follower");
+                                            Toast.makeText(UserSearchActivity.this, "Following!", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 }
                                 @Override public void onCancelled(@NonNull DatabaseError error) {}
