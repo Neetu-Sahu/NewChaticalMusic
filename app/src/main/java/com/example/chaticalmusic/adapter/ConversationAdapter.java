@@ -10,14 +10,21 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.chaticalmusic.FirebasePaths;
 import com.example.chaticalmusic.R;
 import com.example.chaticalmusic.model.Conversation;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.ViewHolder> {
 
@@ -30,6 +37,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     }
 
     private final List<Conversation> mConversations = new ArrayList<>();
+    private final Map<String, ValueEventListener> mStatusListeners = new HashMap<>();
     private final OnConversationClickListener mListener;
     private final OnConversationLongClickListener mLongListener;
     private final SimpleDateFormat mTimeFormatter = new SimpleDateFormat("h:mm a", Locale.getDefault());
@@ -59,6 +67,15 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         holder.bind(conversation, mListener, mLongListener);
     }
 
+    private String formatLastSeen(long timestamp) {
+        long now = System.currentTimeMillis();
+        long diff = now - timestamp;
+        if (diff < 60000) return "Just now";
+        if (diff < 3600000) return (diff / 60000) + "m ago";
+        if (diff < 86400000) return (diff / 3600000) + "h ago";
+        return mDateFormatter.format(new Date(timestamp));
+    }
+
     @Override
     public int getItemCount() {
         return mConversations.size();
@@ -67,6 +84,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     class ViewHolder extends RecyclerView.ViewHolder {
         ImageView avatar;
         TextView name;
+        TextView status;
         TextView lastMessage;
         TextView timestamp;
         TextView unreadCount;
@@ -76,6 +94,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             super(itemView);
             avatar = itemView.findViewById(R.id.conv_avatar);
             name = itemView.findViewById(R.id.conv_name);
+            status = itemView.findViewById(R.id.conv_status);
             lastMessage = itemView.findViewById(R.id.conv_last_message);
             timestamp = itemView.findViewById(R.id.conv_timestamp);
             unreadCount = itemView.findViewById(R.id.conv_unread_count);
@@ -86,6 +105,36 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             name.setText(conversation.getTarget_name() != null ? conversation.getTarget_name() : "User");
             lastMessage.setText(conversation.getLast_message());
             
+            // Fetch status
+            if (mStatusListeners.containsKey(conversation.getTarget_uid())) {
+                FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(conversation.getTarget_uid())
+                        .removeEventListener(mStatusListeners.get(conversation.getTarget_uid()));
+            }
+
+            ValueEventListener statusListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Boolean isOnline = snapshot.child(FirebasePaths.ONLINE).getValue(Boolean.class);
+                    Long lastActive = snapshot.child(FirebasePaths.LAST_ACTIVE).getValue(Long.class);
+
+                    if (isOnline != null && isOnline) {
+                        status.setText("Online");
+                        status.setTextColor(itemView.getContext().getResources().getColor(R.color.melodify_pink));
+                        status.setVisibility(View.VISIBLE);
+                    } else if (lastActive != null) {
+                        status.setText("Last seen: " + formatLastSeen(lastActive));
+                        status.setTextColor(itemView.getContext().getResources().getColor(R.color.melodify_text_secondary));
+                        status.setVisibility(View.VISIBLE);
+                    } else {
+                        status.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override public void onCancelled(@NonNull DatabaseError error) {}
+            };
+            FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(conversation.getTarget_uid()).addValueEventListener(statusListener);
+            mStatusListeners.put(conversation.getTarget_uid(), statusListener);
+
             if (conversation.getLast_timestamp() > 0) {
                 Date date = new Date(conversation.getLast_timestamp());
                 String formattedTime;
