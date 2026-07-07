@@ -47,7 +47,8 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView mProfileName, mProfileBio, mProfileStatus;
     private TextView mFollowersCount, mFollowingCount;
     private Button mLogoutBtn, mFollowBtn, mMessageBtn;
-    private View mProfileActionsContainer;
+    private View mProfileActionsContainer, mFollowStatsRow, mRecentRoomsContainer, mPrivateAccountMessage;
+    private androidx.appcompat.widget.SwitchCompat mSwitchPrivateProfile;
     private RecyclerView mRecentRoomsRecycler;
     private com.example.chaticalmusic.adapter.PublicRoomsAdapter mRecentRoomsAdapter;
     
@@ -60,6 +61,8 @@ public class ProfileActivity extends AppCompatActivity {
     private String mTargetUid;
     private DatabaseReference mUserRef;
     private boolean mIsOwnProfile;
+    private boolean mIsFollowing = false;
+    private boolean mTargetIsPrivate = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +110,10 @@ public class ProfileActivity extends AppCompatActivity {
         mFollowBtn = findViewById(R.id.btn_follow);
         mMessageBtn = findViewById(R.id.btn_message);
         mProfileActionsContainer = findViewById(R.id.profile_actions_container);
+        mFollowStatsRow = findViewById(R.id.follow_stats_row);
+        mRecentRoomsContainer = findViewById(R.id.recent_rooms_recycler).getParent() instanceof View ? (View) findViewById(R.id.recent_rooms_recycler).getParent() : findViewById(R.id.recent_rooms_recycler);
+        mPrivateAccountMessage = findViewById(R.id.private_account_message);
+        mSwitchPrivateProfile = findViewById(R.id.switch_private_profile);
         
         mRecentRoomsRecycler = findViewById(R.id.recent_rooms_recycler);
         mRecentRoomsRecycler.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
@@ -131,10 +138,16 @@ public class ProfileActivity extends AppCompatActivity {
             mProfileName.setOnClickListener(v -> showEditNameDialog());
             mProfileBio.setOnClickListener(v -> showEditBioDialog());
             mMainAvatar.setOnClickListener(v -> showAvatarSelectionDialog());
+            findViewById(R.id.preferences_section).setVisibility(View.VISIBLE);
+            
+            mSwitchPrivateProfile.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                mUserRef.child("is_private").setValue(isChecked);
+            });
         } else {
             mLogoutBtn.setVisibility(View.GONE);
             mProfileActionsContainer.setVisibility(View.VISIBLE);
             mProfileStatus.setVisibility(View.VISIBLE);
+            findViewById(R.id.preferences_section).setVisibility(View.GONE);
             checkFollowStatus();
             setupOtherProfileActions();
         }
@@ -194,7 +207,8 @@ public class ProfileActivity extends AppCompatActivity {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
+                        mIsFollowing = snapshot.exists();
+                        if (mIsFollowing) {
                             mFollowBtn.setText("Following");
                             mFollowBtn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(getResources().getColor(R.color.melodify_card)));
                             mFollowBtn.setTextColor(getResources().getColor(R.color.white));
@@ -231,9 +245,32 @@ public class ProfileActivity extends AppCompatActivity {
                                         @Override public void onCancelled(@NonNull DatabaseError error) {}
                                     });
                         }
+                        updateProfileContentVisibility();
                     }
                     @Override public void onCancelled(@NonNull DatabaseError error) {}
                 });
+    }
+
+    private void updateProfileContentVisibility() {
+        if (mIsOwnProfile) {
+            mFollowStatsRow.setVisibility(View.VISIBLE);
+            mRecentRoomsRecycler.setVisibility(View.VISIBLE);
+            findViewById(R.id.recent_rooms_label).setVisibility(View.VISIBLE);
+            mPrivateAccountMessage.setVisibility(View.GONE);
+            return;
+        }
+
+        if (mTargetIsPrivate && !mIsFollowing) {
+            mFollowStatsRow.setVisibility(View.GONE);
+            mRecentRoomsRecycler.setVisibility(View.GONE);
+            findViewById(R.id.recent_rooms_label).setVisibility(View.GONE);
+            mPrivateAccountMessage.setVisibility(View.VISIBLE);
+        } else {
+            mFollowStatsRow.setVisibility(View.VISIBLE);
+            mRecentRoomsRecycler.setVisibility(View.VISIBLE);
+            findViewById(R.id.recent_rooms_label).setVisibility(View.VISIBLE);
+            mPrivateAccountMessage.setVisibility(View.GONE);
+        }
     }
 
     private void setupOtherProfileActions() {
@@ -252,15 +289,15 @@ public class ProfileActivity extends AppCompatActivity {
                 // Cancel request
                 requestRef.removeValue();
                 Toast.makeText(this, "Request cancelled", Toast.LENGTH_SHORT).show();
-            } else if (text.equals("Follow Back")) {
-                // Immediate follow back
+            } else if (text.equals("Follow Back") || !mTargetIsPrivate) {
+                // Immediate follow (if Public or Follow Back)
                 myFollowingRef.setValue(com.google.firebase.database.ServerValue.TIMESTAMP);
                 targetFollowersRef.setValue(com.google.firebase.database.ServerValue.TIMESTAMP);
                 
                 NotificationHelper.sendNotification(this, mTargetUid, "new_follower");
-                Toast.makeText(this, "Following back!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Following!", Toast.LENGTH_SHORT).show();
             } else {
-                // Send Request
+                // Send Request (Private account)
                 requestRef.setValue(com.google.firebase.database.ServerValue.TIMESTAMP);
                 NotificationHelper.sendNotification(this, mTargetUid, "follow_request");
                 Toast.makeText(this, "Follow request sent!", Toast.LENGTH_SHORT).show();
@@ -329,9 +366,18 @@ public class ProfileActivity extends AppCompatActivity {
                 String photoUrl = snapshot.child("photo_url").getValue(String.class);
                 Long lastActive = snapshot.child("last_active").getValue(Long.class);
                 Boolean online = snapshot.child("online").getValue(Boolean.class);
+                Boolean isPrivate = snapshot.child("is_private").getValue(Boolean.class);
 
                 mProfileName.setText(name != null ? name : "User");
                 mProfileBio.setText(bio != null ? bio : (mIsOwnProfile ? "Tap to set your melody bio..." : "No bio yet."));
+                
+                if (isPrivate != null) {
+                    mTargetIsPrivate = isPrivate;
+                    if (mIsOwnProfile) {
+                        mSwitchPrivateProfile.setChecked(isPrivate);
+                    }
+                    updateProfileContentVisibility();
+                }
                 
                 if (!mIsOwnProfile) {
                     if (online != null && online) {
