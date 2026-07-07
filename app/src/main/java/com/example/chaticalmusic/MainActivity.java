@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.chaticalmusic.model.PlaybackState;
 import com.example.chaticalmusic.model.Room;
+import com.example.chaticalmusic.model.NotificationModel;
 import com.example.chaticalmusic.model.PublicRoomItem;
 import com.example.chaticalmusic.adapter.PublicRoomsAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,22 +28,66 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.ChildEventListener;
 
+import com.example.chaticalmusic.model.JamendoResponse;
+import com.example.chaticalmusic.model.JamendoTrack;
+import com.example.chaticalmusic.network.JamendoApiService;
+import com.example.chaticalmusic.network.RetrofitClient;
+import com.example.chaticalmusic.service.MusicPlaybackService;
+import com.google.common.util.concurrent.ListenableFuture;
+
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
+import androidx.media3.common.Player;
+import androidx.media3.session.MediaController;
+import androidx.media3.session.SessionToken;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.net.Uri;
+import com.bumptech.glide.Glide;
+import java.util.concurrent.ExecutionException;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import android.content.ComponentName;
+
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText mRoomNameInput;
-    private Button mCreateRoomBtn;
-    private Button mJoinRoomBtn;
-    private Button mSearchMusicBtn;
     private android.widget.ProgressBar mProgressBar;
-    private androidx.appcompat.widget.SwitchCompat mPrivateRoomSwitch;
+    private android.widget.TextView mBtnCreateHeader;
+    private android.widget.TextView mBtnJoinHeader;
+    private android.widget.ImageView mBtnRoomSearch;
+
+    // Featured Song Components
+    private androidx.cardview.widget.CardView mFeaturedCard;
+    private android.widget.ImageView mFeaturedImage;
+    private android.widget.TextView mFeaturedTitle;
+    private android.widget.TextView mFeaturedLabel;
+    private JamendoTrack mFeaturedTrack;
+
+    // Mini Player components
+    private android.view.View mMiniPlayerBar;
+    private android.widget.ImageView mMiniArt;
+    private android.widget.TextView mMiniTitle;
+    private android.widget.TextView mMiniArtist;
+    private android.widget.ImageButton mMiniPlayPause;
+
+    // Media Session components
+    private MediaController mMediaController;
+    private ListenableFuture<MediaController> mControllerFuture;
+
+    // Navigation Items
+    private android.widget.LinearLayout mNavLobby;
+    private android.widget.LinearLayout mNavSearch;
+    private android.widget.LinearLayout mNavDm;
+    private android.widget.LinearLayout mNavProfile;
 
     // Public Rooms List Fields
     private RecyclerView mPublicRoomsRecycler;
@@ -51,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     private final List<PublicRoomItem> mPublicRoomsList = new ArrayList<>();
     private DatabaseReference mRoomsRef;
     private ChildEventListener mRoomsChildListener;
+    private LoveAnimationHelper mLoveAnimationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,49 +104,119 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.header_layout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            androidx.constraintlayout.widget.ConstraintLayout.LayoutParams lp = (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) v.getLayoutParams();
+            lp.topMargin = systemBars.top;
+            v.setLayoutParams(lp);
             return insets;
         });
 
-        mRoomNameInput = findViewById(R.id.room_name_input);
-        mCreateRoomBtn = findViewById(R.id.create_room_btn);
-        mJoinRoomBtn = findViewById(R.id.join_room_btn);
-        mSearchMusicBtn = findViewById(R.id.search_music_btn);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.bottom_nav_container), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(0, 0, 0, systemBars.bottom);
+            return insets;
+        });
+
         mProgressBar = findViewById(R.id.main_progress_bar);
-        mPrivateRoomSwitch = findViewById(R.id.private_room_switch);
+        
+        mBtnCreateHeader = findViewById(R.id.btn_create_room_header);
+        mBtnJoinHeader = findViewById(R.id.btn_join_room_header);
+        mBtnRoomSearch = findViewById(R.id.btn_room_search);
 
-        // Create Room Flow
-        mCreateRoomBtn.setOnClickListener(v -> {
-            String roomName = mRoomNameInput.getText().toString().trim();
-            if (TextUtils.isEmpty(roomName)) {
-                Toast.makeText(MainActivity.this, "Please enter a room name", Toast.LENGTH_SHORT).show();
+        // Featured Card Initialization
+        mFeaturedCard = findViewById(R.id.featured_card);
+        mFeaturedImage = findViewById(R.id.featured_image);
+        mFeaturedTitle = findViewById(R.id.featured_title);
+        mFeaturedLabel = findViewById(R.id.featured_label);
+
+        // Mini Player Initialization
+        mMiniPlayerBar = findViewById(R.id.mini_player_bar);
+        mMiniArt = findViewById(R.id.mini_art);
+        mMiniTitle = findViewById(R.id.mini_title);
+        mMiniArtist = findViewById(R.id.mini_artist);
+        mMiniPlayPause = findViewById(R.id.mini_play_pause);
+
+        mNavLobby = findViewById(R.id.nav_lobby);
+        mNavSearch = findViewById(R.id.nav_search);
+        mNavDm = findViewById(R.id.nav_dm);
+        mNavProfile = findViewById(R.id.nav_profile);
+
+        mLoveAnimationHelper = new LoveAnimationHelper(findViewById(R.id.love_animation_container));
+        mLoveAnimationHelper.start();
+
+        mBtnCreateHeader.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, CreateRoomActivity.class));
+        });
+
+        mBtnJoinHeader.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, JoinRoomActivity.class));
+        });
+
+        // Navigation Click Listeners
+        mNavLobby.setOnClickListener(v -> {
+            // Already in Lobby/Main
+            Toast.makeText(this, "Lobby", Toast.LENGTH_SHORT).show();
+        });
+
+        mNavSearch.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, UserSearchActivity.class));
+        });
+
+        mNavDm.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, DmListActivity.class));
+        });
+
+        mNavProfile.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+        });
+
+        mBtnRoomSearch.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, RoomSearchActivity.class));
+        });
+
+        setupNotificationListener();
+
+        mFeaturedCard.setOnClickListener(v -> {
+            if (mFeaturedTrack != null) {
+                playFeaturedTrack();
             } else {
-                createRoom(roomName, mPrivateRoomSwitch.isChecked());
+                // If no featured track loaded yet or user wants to search, go to search
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                intent.putExtra("SELECT_MUSIC_TAB", true);
+                startActivity(intent);
             }
         });
 
-        // Join Room Flow
-        mJoinRoomBtn.setOnClickListener(v -> {
-            String roomName = mRoomNameInput.getText().toString().trim();
-            if (TextUtils.isEmpty(roomName)) {
-                Toast.makeText(MainActivity.this, "Please enter a room name to join", Toast.LENGTH_SHORT).show();
-            } else {
-                joinRoom(roomName);
+        mMiniPlayPause.setOnClickListener(v -> {
+            if (mMediaController != null) {
+                if (mMediaController.isPlaying()) {
+                    mMediaController.pause();
+                } else {
+                    mMediaController.play();
+                }
             }
         });
 
-        // Search Music action
-        mSearchMusicBtn.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, SearchActivity.class));
+        mMiniPlayerBar.setOnClickListener(v -> {
+            if (mMediaController != null && mMediaController.getCurrentMediaItem() != null) {
+                FullPlayerBottomSheet sheet = FullPlayerBottomSheet.newInstance();
+                sheet.setMediaController(mMediaController);
+                sheet.show(getSupportFragmentManager(), "full_player");
+            }
         });
+
+        loadFeaturedSong();
 
         // Public Rooms RecyclerView Setup
         mPublicRoomsRecycler = findViewById(R.id.public_rooms_recycler);
         mNoPublicRoomsText = findViewById(R.id.no_public_rooms_text);
 
         mPublicRoomsAdapter = new PublicRoomsAdapter(item -> {
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS)
+                    .child(uid).child("recent_rooms").child(item.getRoomId()).setValue(com.google.firebase.database.ServerValue.TIMESTAMP);
+
             Intent intent = new Intent(MainActivity.this, RoomActivity.class);
             intent.putExtra("ROOM_ID", item.getRoomId());
             intent.putExtra("ROOM_NAME", item.getRoomName());
@@ -112,14 +228,66 @@ public class MainActivity extends AppCompatActivity {
 
         updateEmptyText();
         setupPublicRoomsListener();
+        saveFcmToken();
+    }
+
+    private void saveFcmToken() {
+        com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        String token = task.getResult();
+                        String uid = FirebaseAuth.getInstance().getUid();
+                        if (uid != null) {
+                            FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS).child(uid).child("fcm_token").setValue(token);
+                        }
+                    }
+                });
+    }
+
+    private void setupNotificationListener() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
+
+        DatabaseReference notificationsRef = FirebaseDatabase.getInstance().getReference(FirebasePaths.NOTIFICATIONS).child(uid);
+        notificationsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                NotificationModel notification = snapshot.getValue(NotificationModel.class);
+                if (notification != null && !notification.isRead()) {
+                    if ("follow_request".equals(notification.getType())) {
+                        showFriendRequestPopup(notification, snapshot.getRef());
+                    } else if ("request_accepted".equals(notification.getType())) {
+                        Toast.makeText(MainActivity.this, "Request accepted by " + notification.getSender_name(), Toast.LENGTH_SHORT).show();
+                        snapshot.getRef().child("read").setValue(true);
+                    }
+                }
+            }
+
+            @Override public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
+            @Override public void onChildRemoved(@NonNull DataSnapshot snapshot) {}
+            @Override public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
+    private void showFriendRequestPopup(NotificationModel notification, DatabaseReference ref) {
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("New Friend Request")
+                .setMessage(notification.getSender_name() + " sent you a friend request!")
+                .setPositiveButton("View", (d, which) -> {
+                    ref.child("read").setValue(true);
+                    startActivity(new Intent(MainActivity.this, FollowRequestsActivity.class));
+                })
+                .setNegativeButton("Ignore", (d, which) -> ref.child("read").setValue(true))
+                .create();
+        
+        dialog.show();
     }
 
     private void setLoadingState(boolean isLoading) {
         if (mProgressBar != null) {
             mProgressBar.setVisibility(isLoading ? android.view.View.VISIBLE : android.view.View.GONE);
         }
-        mCreateRoomBtn.setEnabled(!isLoading);
-        mJoinRoomBtn.setEnabled(!isLoading);
     }
 
     private void createRoom(String roomName, boolean isPrivate) {
@@ -183,6 +351,8 @@ public class MainActivity extends AppCompatActivity {
             setLoadingState(false);
 
             if (task.isSuccessful()) {
+                FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS)
+                        .child(uid).child("recent_rooms").child(roomId).setValue(com.google.firebase.database.ServerValue.TIMESTAMP);
                 Intent intent = new Intent(MainActivity.this, RoomActivity.class);
                 intent.putExtra("ROOM_ID", roomId);
                 intent.putExtra("ROOM_NAME", roomName);
@@ -258,6 +428,11 @@ public class MainActivity extends AppCompatActivity {
                     for (DataSnapshot roomSnapshot : dataSnapshot.getChildren()) {
                         String roomId = roomSnapshot.getKey();
                         String actualRoomName = roomSnapshot.child(FirebasePaths.ROOM_META + "/room_name").getValue(String.class);
+                        
+                        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS)
+                                .child(uid).child("recent_rooms").child(roomId).setValue(com.google.firebase.database.ServerValue.TIMESTAMP);
+
                         Intent intent = new Intent(MainActivity.this, RoomActivity.class);
                         intent.putExtra("ROOM_ID", roomId);
                         intent.putExtra("ROOM_NAME", actualRoomName != null ? actualRoomName : roomInput);
@@ -279,6 +454,11 @@ public class MainActivity extends AppCompatActivity {
                                 for (DataSnapshot roomSnapshot : codeSnapshot.getChildren()) {
                                     String roomId = roomSnapshot.getKey();
                                     String actualRoomName = roomSnapshot.child(FirebasePaths.ROOM_META + "/room_name").getValue(String.class);
+                                    
+                                    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                    FirebaseDatabase.getInstance().getReference(FirebasePaths.USERS)
+                                            .child(uid).child("recent_rooms").child(roomId).setValue(com.google.firebase.database.ServerValue.TIMESTAMP);
+
                                     Intent intent = new Intent(MainActivity.this, RoomActivity.class);
                                     intent.putExtra("ROOM_ID", roomId);
                                     intent.putExtra("ROOM_NAME", actualRoomName != null ? actualRoomName : roomInput);
@@ -423,8 +603,149 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void loadFeaturedSong() {
+        String clientId = BuildConfig.JAMENDO_CLIENT_ID;
+        if (clientId == null || clientId.trim().isEmpty()) {
+            clientId = "56d30cce";
+        }
+
+        JamendoApiService apiService = RetrofitClient.getClient().create(JamendoApiService.class);
+        apiService.getPopularTracks(
+                clientId,
+                "json",
+                10,
+                "mp31",
+                "popularity_week",
+                "600"
+        ).enqueue(new Callback<JamendoResponse>() {
+            @Override
+            public void onResponse(Call<JamendoResponse> call, Response<JamendoResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<JamendoTrack> tracks = response.body().getResults();
+                    if (tracks != null && !tracks.isEmpty()) {
+                        mFeaturedTrack = tracks.get(new java.util.Random().nextInt(tracks.size()));
+                        updateFeaturedUI();
+                    }
+                } else {
+                    android.util.Log.e("MainActivity", "Featured Song Error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JamendoResponse> call, Throwable t) {
+                android.util.Log.e("MainActivity", "Featured Song Failure: " + t.getMessage());
+            }
+        });
+    }
+
+    private void updateFeaturedUI() {
+        if (mFeaturedTrack == null || mFeaturedTitle == null || mFeaturedLabel == null || mFeaturedImage == null) return;
+        mFeaturedTitle.setText(mFeaturedTrack.getTrackTitle());
+        mFeaturedLabel.setText("FEATURED • " + mFeaturedTrack.getTrackArtist());
+        Glide.with(this)
+                .load(mFeaturedTrack.getAlbumArtUrl())
+                .placeholder(R.drawable.gradient_player_bg)
+                .into(mFeaturedImage);
+    }
+
+    private void playFeaturedTrack() {
+        if (mMediaController == null) {
+            Toast.makeText(this, "Playback system not ready", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        MediaItem mediaItem = new MediaItem.Builder()
+                .setMediaId(mFeaturedTrack.getJamendoId())
+                .setUri(Uri.parse(mFeaturedTrack.getStreamUrl()))
+                .setMediaMetadata(new MediaMetadata.Builder()
+                        .setTitle(mFeaturedTrack.getTrackTitle())
+                        .setArtist(mFeaturedTrack.getTrackArtist())
+                        .setArtworkUri(Uri.parse(mFeaturedTrack.getAlbumArtUrl()))
+                        .build())
+                .build();
+
+        mMediaController.setMediaItem(mediaItem);
+        mMediaController.prepare();
+        mMediaController.play();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mLoveAnimationHelper != null) mLoveAnimationHelper.start();
+
+        SessionToken sessionToken = new SessionToken(this, new ComponentName(this, MusicPlaybackService.class));
+        mControllerFuture = new MediaController.Builder(this, sessionToken).buildAsync();
+        mControllerFuture.addListener(() -> {
+            try {
+                mMediaController = mControllerFuture.get();
+                mMediaController.addListener(new Player.Listener() {
+                    @Override
+                    public void onIsPlayingChanged(boolean isPlaying) {
+                        updateMiniPlayer();
+                    }
+                    @Override
+                    public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
+                        updateMiniPlayer();
+                    }
+                    @Override
+                    public void onPlaybackStateChanged(int playbackState) {
+                        updateMiniPlayer();
+                    }
+                });
+                updateMiniPlayer();
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }, ContextCompat.getMainExecutor(this));
+    }
+
+    @Override
+    protected void onStop() {
+        if (mLoveAnimationHelper != null) mLoveAnimationHelper.stop();
+        if (mMediaController != null) {
+            mMediaController.release();
+            mMediaController = null;
+        }
+        if (mControllerFuture != null) {
+            MediaController.releaseFuture(mControllerFuture);
+        }
+        super.onStop();
+    }
+
+    private void updateMiniPlayer() {
+        if (mMediaController == null || mMiniPlayerBar == null) {
+            if (mMiniPlayerBar != null) mMiniPlayerBar.setVisibility(android.view.View.GONE);
+            return;
+        }
+
+        MediaItem mediaItem = mMediaController.getCurrentMediaItem();
+        if (mediaItem != null && mediaItem.mediaMetadata != null) {
+            mMiniPlayerBar.setVisibility(android.view.View.VISIBLE);
+            if (mMiniTitle != null) mMiniTitle.setText(mediaItem.mediaMetadata.title);
+            if (mMiniArtist != null) mMiniArtist.setText(mediaItem.mediaMetadata.artist);
+            if (mMiniArt != null) {
+                Glide.with(this)
+                        .load(mediaItem.mediaMetadata.artworkUri)
+                        .placeholder(R.drawable.ic_music_placeholder)
+                        .into(mMiniArt);
+            }
+
+            if (mMiniPlayPause != null) {
+                if (mMediaController.isPlaying()) {
+                    mMiniPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+                } else {
+                    mMiniPlayPause.setImageResource(android.R.drawable.ic_media_play);
+                }
+            }
+        } else {
+            mMiniPlayerBar.setVisibility(android.view.View.GONE);
+        }
+    }
+
     @Override
     protected void onDestroy() {
+        if (mLoveAnimationHelper != null) mLoveAnimationHelper.stop();
         if (mRoomsRef != null && mRoomsChildListener != null) {
             mRoomsRef.removeEventListener(mRoomsChildListener);
         }
